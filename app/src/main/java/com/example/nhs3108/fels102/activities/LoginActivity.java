@@ -1,9 +1,11 @@
-package com.example.nhs3108.fels102;
+package com.example.nhs3108.fels102.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 
-public class LoginActivity extends AppCompatActivity {
+import com.example.nhs3108.fels102.R;
+
+public class LoginActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
