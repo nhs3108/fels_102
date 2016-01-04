@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">Fels102</string>
+    <string name="app_name">Fels</string>
+    <string name="app_full_name">Framgia e-Learning System</string>
+    <string name="author_name">Hong Son Nguyen</string>
+    <string name="author_url">https://www.facebook.com/blue.sky318</string>
+    <string name="title_login">Login</string>
+    <string name="title_sign_up">Sign up</string>
+    <string name="hint_email_input">Enter your email</string>
+    <string name="hint_password_input">Enter your password</string>
+    <string name="hint_name_input">What\'s your full-name?</string>
+    <string name="hint_repassword_input">Password confirmation</string>
+    <string name="label_login">Submit</string>
+    <string name="label_register">Submit</string>
+    <string name="label_link_register"><u>No account yet? Register now!</u></string>
+    <string name="error_unauthorized">Wrong email or password!</string>
+    <string name="error_unknown">Something went wrong! Please try again later!</string>
+    <string name="msg_no_internet">No internet accesss! Please check your connection!</string>
+    <string name="msg_wait">Please waiting...</string>
 </resources>
