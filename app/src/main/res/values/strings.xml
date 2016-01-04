@@ -16,4 +16,10 @@
     <string name="error_unknown">Something went wrong! Please try again later!</string>
     <string name="msg_no_internet">No internet accesss! Please check your connection!</string>
     <string name="msg_wait">Please waiting...</string>
+    <string name="error_server_not_found">Server not found!</string>
+    <string name="error_email_short">Email is too short!</string>
+    <string name="error_email_invalid">Invalid email!</string>
+    <string name="error_password_short">Password is too short!</string>
+    <string name="error_response_data">Password is too short!</string>
+    <string name="error_internal_server_error">Internal server error!</string>
 </resources>
