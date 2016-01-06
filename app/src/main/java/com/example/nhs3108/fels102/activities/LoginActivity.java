@@ -68,12 +68,13 @@ public class LoginActivity extends Activity {
     }
 
     private boolean isValidConditions() {
+        ValidationUtils validationUtils = new ValidationUtils(this);
         if (!InternetUtils.isAvaiable(LoginActivity.this)) {
             Toast.makeText(LoginActivity.this, getString(R.string.msg_no_internet), Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            boolean isValidEmail = ValidationUtils.validateEmail(editTextEmail);
-            boolean isValidPassword = ValidationUtils.validatePassword(editTextPassword);
+            boolean isValidEmail = validationUtils.validateEmail(editTextEmail);
+            boolean isValidPassword = validationUtils.validatePassword(editTextPassword);
             return isValidEmail && isValidPassword;
         }
     }
@@ -130,7 +131,8 @@ public class LoginActivity extends Activity {
                     }
                     break;
                 case HttpStatusConsts.UNAUTHORIZED:
-                    Toast.makeText(LoginActivity.this, getString(R.string.error_unauthorized), Toast.LENGTH_SHORT).show();
+                    String errorMessage = getString(R.string.error_unauthorized);
+                    notifyError(errorMessage);
                     break;
                 case HttpStatusConsts.NOT_FOUND:
                     Toast.makeText(LoginActivity.this, getString(R.string.error_server_not_found), Toast.LENGTH_SHORT).show();
@@ -150,6 +152,16 @@ public class LoginActivity extends Activity {
             editor.putString(CommonConsts.NAME_FIELD, responseJson.getJSONObject("user").getString("name"));
             editor.putString(CommonConsts.AUTH_TOKEN_FIELD, responseJson.getJSONObject("user").getString("auth_token"));
             editor.commit();
+        }
+
+        private void notifyError(String defaultMessage) {
+            try {
+                JSONObject responseJson = new JSONObject(mResponseBody);
+                Toast.makeText(LoginActivity.this, responseJson.getString("message"), Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(LoginActivity.this, defaultMessage, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
