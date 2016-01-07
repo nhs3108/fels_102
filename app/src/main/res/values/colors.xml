@@ -14,4 +14,7 @@
     <color name="bg_btn_login_pressed">#1c786a</color>
     <color name="text_msg_input">#626262</color>
     <color name="bg_blue">#0f748b</color>
+    <color name="son">#1E88E5</color>
+    <color name="son2">#1565C0</color>
+    <color name="header">#00796B</color>
 </resources>

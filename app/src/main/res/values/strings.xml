@@ -25,4 +25,8 @@
     <string name="msg_signup_successfully">Register successfully!</string>
     <string name="error_repassword_not_match">Password is not match to password confirmation</string>
     <string name="error_name_short">Name is too short!</string>
+    <string name="label_words">Words</string>
+    <string name="label_lessons">Lessons</string>
+    <string name="label_profile">PROFILE</string>
+    <string name="description_ur_avatar">User\'s avatar</string>
 </resources>
