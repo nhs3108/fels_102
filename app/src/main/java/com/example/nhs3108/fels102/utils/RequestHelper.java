@@ -1,8 +1,10 @@
 package com.example.nhs3108.fels102.utils;
 
+import com.example.nhs3108.fels102.constants.HttpStatusConsts;
+
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -15,6 +17,7 @@ import java.net.URLEncoder;
 public class RequestHelper {
     public static ResponseHelper executePostRequest(String link, NameValuePair... args) throws IOException {
         ResponseHelper response;
+        int responseStatusCode;
         URL url = new URL(link);
         String charset = "UTF-8";
         String data = "";
@@ -28,21 +31,22 @@ public class RequestHelper {
         }
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
-        try {
-            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-            wr.write(data);
-            wr.flush();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-                break;
-            }
-            response = new ResponseHelper(connection.getResponseCode(), sb.toString());
-        } catch (FileNotFoundException e) {
-            response = new ResponseHelper(connection.getResponseCode(), "");
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+        wr.write(data);
+        wr.flush();
+        wr.close();
+        responseStatusCode = connection.getResponseCode();
+        InputStream inputStream = (responseStatusCode >= HttpStatusConsts.OK
+                && responseStatusCode < HttpStatusConsts.BAD_REQUEST) ?
+                connection.getInputStream() : connection.getErrorStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+            break;
         }
+        response = new ResponseHelper(connection.getResponseCode(), sb.toString());
         return response;
     }
 }

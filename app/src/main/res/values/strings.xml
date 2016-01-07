@@ -12,7 +12,7 @@
     <string name="label_login">Submit</string>
     <string name="label_register">Submit</string>
     <string name="label_link_register"><u>No account yet? Register now!</u></string>
-    <string name="error_unauthorized">Wrong email or password!</string>
+    <string name="error_unauthorized">Unauthorized!</string>
     <string name="error_unknown">Something went wrong! Please try again later!</string>
     <string name="msg_no_internet">No internet accesss! Please check your connection!</string>
     <string name="msg_wait">Please waiting...</string>
@@ -20,6 +20,9 @@
     <string name="error_email_short">Email is too short!</string>
     <string name="error_email_invalid">Invalid email!</string>
     <string name="error_password_short">Password is too short!</string>
-    <string name="error_response_data">Password is too short!</string>
+    <string name="error_response_data">Error response data!</string>
     <string name="error_internal_server_error">Internal server error!</string>
+    <string name="msg_signup_successfully">Register successfully!</string>
+    <string name="error_repassword_not_match">Password is not match to password confirmation</string>
+    <string name="error_name_short">Name is too short!</string>
 </resources>
