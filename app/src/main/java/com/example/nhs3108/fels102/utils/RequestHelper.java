@@ -15,26 +15,37 @@ import java.net.URLEncoder;
  * Created by nhs3108 on 1/4/16.
  */
 public class RequestHelper {
-    public static ResponseHelper executePostRequest(String link, NameValuePair... args) throws IOException {
+    public static ResponseHelper executeRequest(String link, Method method, NameValuePair... args) throws IOException {
         ResponseHelper response;
         int responseStatusCode;
-        URL url = new URL(link);
-        String charset = "UTF-8";
-        String data = "";
-        data = String.format("%s=%s",
-                URLEncoder.encode(args[0].getName(), charset),
-                URLEncoder.encode(args[0].getValue(), charset));
-        for (int i = 1; i < args.length; i++) {
-            data += String.format("&%s=%s",
-                    URLEncoder.encode(args[i].getName(), charset),
-                    URLEncoder.encode(args[i].getValue(), charset));
+        HttpURLConnection connection = null;
+        if (method == Method.POST) {
+            URL url = new URL(link);
+            String charset = "UTF-8";
+            String data = "";
+            data = String.format("%s=%s",
+                    URLEncoder.encode(args[0].getName(), charset),
+                    URLEncoder.encode(args[0].getValue(), charset));
+            for (int i = 1; i < args.length; i++) {
+                data += String.format("&%s=%s",
+                        URLEncoder.encode(args[i].getName(), charset),
+                        URLEncoder.encode(args[i].getValue(), charset));
+            }
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+            wr.write(data);
+            wr.flush();
+            wr.close();
+        } else {
+            link += String.format("?%s=%s", args[0].getName(), args[0].getValue());
+            for (int i = 1; i < args.length; i++) {
+                link += String.format("&%s=%s", args[i].getName(), args[i].getValue());
+            }
+            URL url = new URL(link);
+            connection = (HttpURLConnection) url.openConnection();
         }
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-        wr.write(data);
-        wr.flush();
-        wr.close();
+
         responseStatusCode = connection.getResponseCode();
         InputStream inputStream = (responseStatusCode >= HttpStatusConsts.OK
                 && responseStatusCode < HttpStatusConsts.BAD_REQUEST) ?
@@ -49,4 +60,8 @@ public class RequestHelper {
         response = new ResponseHelper(connection.getResponseCode(), sb.toString());
         return response;
     }
+
+    ;
+
+    public enum Method {POST, GET}
 }
