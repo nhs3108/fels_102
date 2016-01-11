@@ -109,7 +109,7 @@ public class RegisterActivity extends Activity {
             NameValuePair nvp3 = new NameValuePair(mPasswordParamName, password);
             NameValuePair nvp4 = new NameValuePair(mPwdConfirmationParamName, passwordConfirmation);
             try {
-                ResponseHelper responseHelper = RequestHelper.executePostRequest(UrlConsts.REGISTER_URL, nvp1, nvp2, nvp3, nvp4);
+                ResponseHelper responseHelper = RequestHelper.executeRequest(UrlConsts.REGISTER_URL, RequestHelper.Method.POST, nvp1, nvp2, nvp3, nvp4);
                 mStatusCode = responseHelper.getResponseCode();
                 mResponseBody = responseHelper.getResponseBody();
             } catch (MalformedURLException e) {
