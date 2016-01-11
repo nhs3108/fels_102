@@ -29,4 +29,5 @@
     <string name="label_lessons">Lessons</string>
     <string name="label_profile">PROFILE</string>
     <string name="description_ur_avatar">User\'s avatar</string>
+    <string name="label_categories">Categories</string>
 </resources>

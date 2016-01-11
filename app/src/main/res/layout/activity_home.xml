@@ -120,6 +120,16 @@
                 android:textColor="@color/white" />
 
             <Button
+                android:id="@+id/btn_categories"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/button_selector"
+                android:text="@string/label_categories"
+                android:textColor="@color/white" />
+
+            <Button
                 android:id="@+id/btn_lessons"
                 style="?android:buttonBarButtonStyle"
                 android:layout_width="100dp"

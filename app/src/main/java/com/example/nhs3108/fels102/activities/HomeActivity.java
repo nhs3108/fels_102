@@ -48,10 +48,23 @@ public class HomeActivity extends Activity {
         listViewUActivities.setAdapter(adapter);
         Button btnWordList = (Button) findViewById(R.id.btn_words);
         Button btnLessons = (Button) findViewById(R.id.btn_lessons);
+        Button btnCategories = (Button) findViewById(R.id.btn_categories);
         btnWordList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(HomeActivity.this, WordListActivity.class));
+            }
+        });
+        btnLessons.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this, LessionActivity.class));
+            }
+        });
+        btnCategories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
             }
         });
     }
