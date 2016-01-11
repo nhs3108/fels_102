@@ -52,7 +52,8 @@
             android:gravity="center_horizontal"
             android:hint="@string/hint_email_input"
             android:inputType="textEmailAddress"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:text="nhs3108@gmail.com" />
 
         <EditText
             android:id="@+id/edit_password"
@@ -64,7 +65,8 @@
             android:gravity="center_horizontal"
             android:hint="@string/hint_password_input"
             android:inputType="textPassword"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:text="11111111" />
 
         <Button
             android:id="@+id/btn_login"

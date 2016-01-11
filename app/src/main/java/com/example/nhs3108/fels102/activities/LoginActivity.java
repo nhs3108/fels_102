@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,33 +39,37 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
-        Button loginButton = (Button) findViewById(R.id.btn_login);
-        editTextEmail = (EditText) findViewById(R.id.edit_email);
-        editTextPassword = (EditText) findViewById(R.id.edit_password);
+        if (TextUtils.isEmpty(mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null))) {
+            setContentView(R.layout.activity_login);
+            Button loginButton = (Button) findViewById(R.id.btn_login);
+            editTextEmail = (EditText) findViewById(R.id.edit_email);
+            editTextPassword = (EditText) findViewById(R.id.edit_password);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = editTextEmail.getText().toString();
-                String password = editTextPassword.getText().toString();
-                if (isValidConditions()) {
-                    editTextEmail.setError(null);
-                    editTextPassword.setError(null);
-                    new LoginAsyncTask().execute(email, password);
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String email = editTextEmail.getText().toString();
+                    String password = editTextPassword.getText().toString();
+                    if (isValidConditions()) {
+                        editTextEmail.setError(null);
+                        editTextPassword.setError(null);
+                        new LoginAsyncTask().execute(email, password);
+                    }
                 }
-            }
-        });
+            });
 
-        TextView textViewLinkToRegister = (TextView) findViewById(R.id.text_link_to_register);
-        textViewLinkToRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-            }
-        });
+            TextView textViewLinkToRegister = (TextView) findViewById(R.id.text_link_to_register);
+            textViewLinkToRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                }
+            });
+        } else {
+            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+            finish();
+        }
     }
 
     private boolean isValidConditions() {
@@ -102,7 +107,7 @@ public class LoginActivity extends Activity {
             NameValuePair nvp2 = new NameValuePair(passwordParamName, password);
             ResponseHelper responseHelper = null;
             try {
-                responseHelper = RequestHelper.executePostRequest(UrlConsts.LOGIN, nvp1, nvp2);
+                responseHelper = RequestHelper.executeRequest(UrlConsts.LOGIN, RequestHelper.Method.POST, nvp1, nvp2);
                 mStatusCode = responseHelper.getResponseCode();
                 mResponseBody = responseHelper.getResponseBody();
             } catch (MalformedURLException e) {
@@ -124,6 +129,8 @@ public class LoginActivity extends Activity {
                         storeUserInfo();
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        String activitiesStr = new JSONObject(mResponseBody).optJSONObject("user").optString("activities");
+                        intent.putExtra("activities", activitiesStr);
                         startActivity(intent);
                         finish();
                     } catch (JSONException e) {
