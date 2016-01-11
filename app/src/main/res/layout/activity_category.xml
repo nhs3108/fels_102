@@ -27,9 +27,9 @@
             android:layout_height="60dp"
             android:layout_centerInParent="true"
             android:gravity="center_vertical"
-            android:text="@string/label_categories"
+            android:text="@string/label_choose_category"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
     </RelativeLayout>
 

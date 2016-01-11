@@ -34,7 +34,7 @@ public class WordAdapter extends ArrayAdapter<Word> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         Word word = mList.get(position);
-        Answer answerOfWord = word.getAnswer();
+        Answer correctAnswerOfWord = word.getCorrectAnswer();
         if (convertView == null) {
             convertView = mInflater.inflate(mIdLayout, parent, false);
             viewHolder = new ViewHolder();
@@ -46,8 +46,10 @@ public class WordAdapter extends ArrayAdapter<Word> {
         }
 
         viewHolder.originWord.setText(word.getContent());
-        viewHolder.wordMeaning.setText(word.getAnswer().getContent());
-        if (!answerOfWord.isCorrect()) {
+        if (correctAnswerOfWord != null) {
+            viewHolder.wordMeaning.setText(correctAnswerOfWord.getContent());
+        } else {
+            viewHolder.wordMeaning.setText(mActivity.getString(R.string.unknow_answer));
             viewHolder.wordMeaning.setTextColor(mActivity.getResources().getColor(R.color.colorAccent));
         }
         return convertView;
