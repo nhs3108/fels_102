@@ -10,37 +10,47 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by nhs3108 on 1/4/16.
  */
 public class RequestHelper {
     public static ResponseHelper executeRequest(String link, Method method, NameValuePair... args) throws IOException {
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(Arrays.asList(args));
+        return executeRequest(link, method, nameValuePairs);
+    }
+
+    public static ResponseHelper executeRequest(String link, Method method, ArrayList<NameValuePair> args) throws IOException {
         ResponseHelper response;
         int responseStatusCode;
         HttpURLConnection connection = null;
-        if (method == Method.POST) {
+        if (method != Method.GET) {
             URL url = new URL(link);
             String charset = "UTF-8";
             String data = "";
             data = String.format("%s=%s",
-                    URLEncoder.encode(args[0].getName(), charset),
-                    URLEncoder.encode(args[0].getValue(), charset));
-            for (int i = 1; i < args.length; i++) {
+                    URLEncoder.encode(args.get(0).getName(), charset),
+                    URLEncoder.encode(args.get(0).getValue(), charset));
+            for (NameValuePair nvp : args) {
                 data += String.format("&%s=%s",
-                        URLEncoder.encode(args[i].getName(), charset),
-                        URLEncoder.encode(args[i].getValue(), charset));
+                        URLEncoder.encode(nvp.getName(), charset),
+                        URLEncoder.encode(nvp.getValue(), charset));
             }
             connection = (HttpURLConnection) url.openConnection();
+            if (method == Method.PATCH) {
+                connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            }
             connection.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
             wr.write(data);
             wr.flush();
             wr.close();
         } else {
-            link += String.format("?%s=%s", args[0].getName(), args[0].getValue());
-            for (int i = 1; i < args.length; i++) {
-                link += String.format("&%s=%s", args[i].getName(), args[i].getValue());
+            link += String.format("?%s=%s", args.get(0).getName(), args.get(0).getValue());
+            for (NameValuePair nvp : args) {
+                link += String.format("&%s=%s", nvp.getName(), nvp.getValue());
             }
             URL url = new URL(link);
             connection = (HttpURLConnection) url.openConnection();
@@ -61,7 +71,5 @@ public class RequestHelper {
         return response;
     }
 
-    ;
-
-    public enum Method {POST, GET}
+    public enum Method {POST, GET, PATCH}
 }

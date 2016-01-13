@@ -54,7 +54,7 @@ public class CategoryActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(CategoryActivity.this, LessionActivity.class);
-                intent.putExtra("categoryId", mCategoriesList.get(position).getId());
+                intent.putExtra(CommonConsts.KEY_CATEGORY_ID, mCategoriesList.get(position).getId());
                 startActivity(intent);
             }
         });
