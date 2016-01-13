@@ -29,5 +29,8 @@
     <string name="label_lessons">Lessons</string>
     <string name="label_profile">PROFILE</string>
     <string name="description_ur_avatar">User\'s avatar</string>
-    <string name="label_categories">Categories</string>
+    <string name="label_choose_category">Choose the category ...</string>
+    <string name="num_of_words_learned">Number of words learned</string>
+    <string name="label_start_lesson">Start lesson</string>
+    <string name="unknow_answer">Unknow answer</string>
 </resources>

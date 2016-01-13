@@ -117,12 +117,14 @@ public class WordListActivity extends Activity {
             for (int i = 0; i < numOfWords; i++) {
                 String wordContent = wordsJson.optJSONObject(i).optString("content");
                 JSONArray answersJson = wordsJson.optJSONObject(i).optJSONArray("answers");
+                ArrayList<Answer> answers = new ArrayList<Answer>();
                 int numOfAnswers = answersJson.length();
                 for (int j = 0; j < numOfAnswers; j++) {
                     String answerContent = answersJson.optJSONObject(j).optString("content");
                     Boolean isCorrect = answersJson.optJSONObject(j).optBoolean("is_correct");
-                    mWordsList.add(new Word(wordContent, new Answer(answerContent, isCorrect)));
+                    answers.add(new Answer(answerContent, isCorrect));
                 }
+                mWordsList.add(new Word(wordContent, answers));
             }
             mWordAdapter.notifyDataSetChanged();
         }

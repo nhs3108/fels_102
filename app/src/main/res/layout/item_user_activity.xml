@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="50dp"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:weightSum="100">
@@ -10,7 +10,7 @@
         android:id="@+id/text_activity_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="70"
+        android:layout_weight="75"
         android:fontFamily="sans-serif"
         android:textColor="@android:color/black"
         android:textSize="14sp" />
@@ -19,7 +19,7 @@
         android:id="@+id/text_activity_time"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="30"
+        android:layout_weight="25"
         android:fontFamily="sans-serif-thin"
         android:gravity="start|bottom"
         android:textSize="12sp"

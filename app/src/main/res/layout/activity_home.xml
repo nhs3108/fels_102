@@ -49,6 +49,7 @@
                     android:src="@mipmap/ic_user_blue" />
 
                 <TextView
+                    android:id="@+id/text_current_user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
@@ -68,6 +69,7 @@
                     android:src="@mipmap/ic_email_blue" />
 
                 <TextView
+                    android:id="@+id/text_current_user_email"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
@@ -87,6 +89,7 @@
                     android:src="@mipmap/ic_file_blue" />
 
                 <TextView
+                    android:id="@+id/text_current_learned_words"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
@@ -117,16 +120,6 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/button_selector"
                 android:text="@string/label_words"
-                android:textColor="@color/white" />
-
-            <Button
-                android:id="@+id/btn_categories"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/button_selector"
-                android:text="@string/label_categories"
                 android:textColor="@color/white" />
 
             <Button
