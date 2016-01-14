@@ -34,4 +34,8 @@
     <string name="label_start_lesson">Start lesson</string>
     <string name="unknow_answer">Unknow answer</string>
     <string name="bad_request">Bad request</string>
+    <string name="label_result">Result</string>
+    <string name="label_question">Question \#</string>
+    <string name="label_lesson">Lesson</string>
+    <string name="default_lesson_name">Uknown lesson</string>
 </resources>
