@@ -1,61 +1,79 @@
 package com.example.nhs3108.fels102.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.nhs3108.fels102.R;
+import com.example.nhs3108.fels102.activities.LessonActivity;
+import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.utils.Category;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class CategoryAdapter extends ArrayAdapter<Category> {
-    private Activity mActivity;
-    private int mIdLayout;
-    private ArrayList<Category> mList;
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+    private static Activity sActivity;
+    private static ArrayList<Category> sList;
     private LayoutInflater mInflater;
 
-    public CategoryAdapter(Activity activity, int idLayout, ArrayList<Category> list) {
-        super(activity, idLayout, list);
-        this.mActivity = activity;
-        this.mIdLayout = idLayout;
-        this.mList = list;
+    public CategoryAdapter(Activity activity, ArrayList<Category> list) {
+        this.sActivity = activity;
+        this.sList = list;
         this.mInflater = LayoutInflater.from(activity);
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        Category category = mList.get(position);
-        if (convertView == null) {
-            convertView = mInflater.inflate(mIdLayout, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.categoryPhoto = (ImageView) convertView.findViewById(R.id.img_category_photo);
-            viewHolder.categoryName = (TextView) convertView.findViewById(R.id.text_category_name);
-            viewHolder.categoryStatus = (TextView) convertView.findViewById(R.id.text_category_status);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = mInflater.inflate(R.layout.item_category, parent, false);
+        ViewHolder viewHolder = new ViewHolder(itemView);
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        Category category = sList.get(position);
         new SetImageViewSrcTask(viewHolder.categoryPhoto).execute(category.getPhotoUrl());
         viewHolder.categoryName.setText(category.getName());
         viewHolder.categoryStatus.setText(String.format("%s : %s",
-                mActivity.getString(R.string.num_of_words_learned),
+                sActivity.getString(R.string.num_of_words_learned),
                 category.getSumOfLearnedWords()));
-        return convertView;
+        viewHolder.categoryId = sList.get(position).getId();
     }
 
-    static class ViewHolder {
+    @Override
+    public int getItemCount() {
+        return sList.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        int categoryId;
         ImageView categoryPhoto;
         TextView categoryName;
         TextView categoryStatus;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            categoryPhoto = (ImageView) itemView.findViewById(R.id.img_category_photo);
+            categoryName = (TextView) itemView.findViewById(R.id.text_category_name);
+            categoryStatus = (TextView) itemView.findViewById(R.id.text_category_status);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(sActivity, LessonActivity.class);
+                    intent.putExtra(CommonConsts.KEY_CATEGORY_ID, categoryId);
+                    sActivity.startActivity(intent);
+                }
+            });
+        }
     }
 
     private class SetImageViewSrcTask extends AsyncTask<String, Void, Bitmap> {
