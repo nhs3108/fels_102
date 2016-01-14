@@ -53,7 +53,7 @@ public class CategoryActivity extends Activity {
         listViewCategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(CategoryActivity.this, LessionActivity.class);
+                Intent intent = new Intent(CategoryActivity.this, LessonActivity.class);
                 intent.putExtra(CommonConsts.KEY_CATEGORY_ID, mCategoriesList.get(position).getId());
                 startActivity(intent);
             }

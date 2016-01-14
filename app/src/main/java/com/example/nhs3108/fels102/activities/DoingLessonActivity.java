@@ -1,10 +1,8 @@
 package com.example.nhs3108.fels102.activities;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -12,7 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.LessonFragmentPagerAdapter;
@@ -25,6 +23,7 @@ import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
+import com.example.nhs3108.fels102.utils.UserAnswer;
 import com.example.nhs3108.fels102.utils.Word;
 
 import org.json.JSONArray;
@@ -39,18 +38,21 @@ import java.util.List;
  */
 public class DoingLessonActivity extends FragmentActivity {
     private ArrayList<NameValuePair> mRequestParamsPair = new ArrayList<NameValuePair>();
-    private ArrayList<NameValuePair> mUserAnswers = new ArrayList<NameValuePair>();
+    private ArrayList<UserAnswer> mUserAnswers = new ArrayList<UserAnswer>();
     private SharedPreferences mSharedPreferences;
     private ArrayList<Word> mQuestionList = new ArrayList<Word>();
     private ViewPager mViewPager;
+    private TextView mTextViewLessonName;
     private String mAuthToken;
     private int mLessonId;
+    private String mLessonName;
     private List<Fragment> mQuestionFragmentList = new ArrayList<Fragment>();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doing_lesson);
         initialize();
+        mTextViewLessonName.setText(mLessonName);
         LessonFragmentPagerAdapter lessonFragmentPagerAdapter =
                 new LessonFragmentPagerAdapter(getSupportFragmentManager(), mQuestionFragmentList);
         mViewPager.setAdapter(lessonFragmentPagerAdapter);
@@ -62,9 +64,14 @@ public class DoingLessonActivity extends FragmentActivity {
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
         Intent data = getIntent();
         mLessonId = data.getIntExtra(CommonConsts.KEY_LESSON_ID, -1);
+        mLessonName = data.getStringExtra(CommonConsts.KEY_LESSON_NAME);
+        if (TextUtils.isEmpty(mLessonName)) {
+            mLessonName = getString(R.string.default_lesson_name);
+        }
         initQuestionList();
         mViewPager = (ViewPager) findViewById(R.id.view_pager_question);
         mViewPager.setOffscreenPageLimit(mQuestionList.size());
+        mTextViewLessonName = (TextView) findViewById(R.id.text_lesson_name);
         initQuestionFragmentList();
     }
 
@@ -105,6 +112,11 @@ public class DoingLessonActivity extends FragmentActivity {
                 @Override
                 public ArrayList<NameValuePair> getRequestParamsPairs() {
                     return mRequestParamsPair;
+                }
+
+                @Override
+                public ArrayList<UserAnswer> getUserAnswers() {
+                    return mUserAnswers;
                 }
 
                 @Override
@@ -165,7 +177,11 @@ public class DoingLessonActivity extends FragmentActivity {
             super.onPostExecute(result);
             switch (mStatusCode) {
                 case HttpStatusConsts.OK:
-                    Toast.makeText(DoingLessonActivity.this, mResponseBody, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DoingLessonActivity.this, ResultActivity.class);
+                    intent.putExtra(CommonConsts.KEY_USER_ANSWERS, mUserAnswers);
+                    intent.putExtra(CommonConsts.KEY_LESSON_NAME, mLessonName);
+                    startActivity(intent);
+                    finish();
                     break;
                 default:
                     ResponseHelper.httpStatusNotify(DoingLessonActivity.this, mStatusCode);

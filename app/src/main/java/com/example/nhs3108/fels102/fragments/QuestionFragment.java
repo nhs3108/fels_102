@@ -1,5 +1,6 @@
 package com.example.nhs3108.fels102.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.AnswerAdapter;
 import com.example.nhs3108.fels102.utils.Answer;
 import com.example.nhs3108.fels102.utils.NameValuePair;
+import com.example.nhs3108.fels102.utils.UserAnswer;
 import com.example.nhs3108.fels102.utils.Word;
 
 import java.util.ArrayList;
@@ -22,11 +24,18 @@ import java.util.ArrayList;
  * Created by nhs3108 on 1/13/16.
  */
 public abstract class QuestionFragment extends Fragment {
-    public ArrayList<NameValuePair> mNameValuePairs;
-    private ListView mlistViewAnswers;
+    private final String RESULT_WORD_ID_FORMAT = "lesson[results_attributes][%s]['id']";
+    private final String RESULT_ANWSER_ID_FORMAT = "lesson[results_attributes][%s]['answer_id']";
+    private ArrayList<NameValuePair> mNameValuePairs;
+    private ArrayList<UserAnswer> mUserAnswers = new ArrayList<UserAnswer>();
     private ArrayList<Answer> mAnswersList;
     private int mFragmentIndex;
     private Word mWord;
+    private TextView mTextViewQuestionName;
+    private TextView mTextViewQuestionContent;
+    private ListView mlistViewAnswers;
+    private View mFragmentView;
+    private Activity mActivity;
 
     private static void setViewAndChildrenEnabled(View view, boolean enabled) {
         view.setEnabled(enabled);
@@ -41,20 +50,13 @@ public abstract class QuestionFragment extends Fragment {
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mWord = getWord();
-        mAnswersList = mWord.getAnswers();
-        mFragmentIndex = getFragmentIndex();
-        mNameValuePairs = getRequestParamsPairs();
-
-        View view = inflater.inflate(R.layout.fragment_question, container, false);
-        TextView textViewQuestionName = (TextView) view.findViewById(R.id.text_question_name);
-        textViewQuestionName.setText("Question #" + mFragmentIndex);
-        TextView textViewQuestionContent = (TextView) view.findViewById(R.id.text_question_content);
-        textViewQuestionContent.setText(mWord.getContent());
-        mlistViewAnswers = (ListView) view.findViewById(R.id.list_answers);
-        AnswerAdapter answerAdapter = new AnswerAdapter(getActivity(), R.layout.item_answer, mAnswersList);
+        mFragmentView = inflater.inflate(R.layout.fragment_question, container, false);
+        initialize();
+        mTextViewQuestionName.setText(mActivity.getString(R.string.label_question) + (mFragmentIndex + 1));
+        mTextViewQuestionContent.setText(mWord.getContent());
+        AnswerAdapter answerAdapter = new AnswerAdapter(mActivity, R.layout.item_answer, mAnswersList);
         mlistViewAnswers.setAdapter(answerAdapter);
-        return view;
+        return mFragmentView;
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -65,28 +67,55 @@ public abstract class QuestionFragment extends Fragment {
                 Button btnAnswerSelected = (Button) view.findViewById(R.id.text_anwser_content);
                 btnAnswerSelected.setBackgroundColor(getResources().getColor(R.color.actionbar));
                 setViewAndChildrenEnabled((View) view.getParent().getParent(), false);
-                String resultWordIdFormat = "lesson[results_attributes][%s]['id']";
-                String resultAnswerIdFormat = "lesson[results_attributes][%s]['answer_id']";
                 Answer answer = mAnswersList.get(position);
-                NameValuePair nameValuePair1 = new NameValuePair(
-                        String.format(resultWordIdFormat, String.valueOf(mFragmentIndex)),
-                        String.valueOf(mWord.getId())
-                );
-                NameValuePair nameValuePair2 = new NameValuePair(
-                        String.format(resultAnswerIdFormat, String.valueOf(mFragmentIndex)),
-                        String.valueOf(answer.getId())
-                );
-
-                mNameValuePairs.add(nameValuePair1);
-                mNameValuePairs.add(nameValuePair2);
+                mUserAnswers.add(new UserAnswer(mWord.getContent(), answer.getContent(), answer.isCorrect()));
+                updateNameValuePairs(mFragmentIndex, mNameValuePairs, mWord, answer);
+                updateUserAnswers(mUserAnswers, mWord, answer);
                 changePage();
             }
         });
     }
 
+    private void updateNameValuePairs(int index, ArrayList<NameValuePair> nameValuePairs, Word word, Answer answer) {
+        NameValuePair nameValuePair1 = new NameValuePair(
+                String.format(RESULT_WORD_ID_FORMAT, String.valueOf(index)),
+                String.valueOf(word.getId())
+        );
+        NameValuePair nameValuePair2 = new NameValuePair(
+                String.format(RESULT_ANWSER_ID_FORMAT, String.valueOf(index)),
+                String.valueOf(answer.getId())
+        );
+
+        nameValuePairs.add(nameValuePair1);
+        nameValuePairs.add(nameValuePair2);
+    }
+
+    private void updateUserAnswers(ArrayList<UserAnswer> userAnswers, Word word, Answer answer) {
+        userAnswers.add(new UserAnswer(word.getContent(), answer.getContent(), answer.isCorrect()));
+    }
+
+    private void initialize() {
+        mActivity = getActivity();
+        mWord = getWord();
+        mAnswersList = mWord.getAnswers();
+        mFragmentIndex = getFragmentIndex();
+        mNameValuePairs = getRequestParamsPairs();
+        mUserAnswers = getUserAnswers();
+        initViewComponent();
+
+    }
+
+    private void initViewComponent() {
+        mTextViewQuestionName = (TextView) mFragmentView.findViewById(R.id.text_question_name);
+        mTextViewQuestionContent = (TextView) mFragmentView.findViewById(R.id.text_question_content);
+        mlistViewAnswers = (ListView) mFragmentView.findViewById(R.id.list_answers);
+    }
+
     public abstract Word getWord();
 
     public abstract ArrayList<NameValuePair> getRequestParamsPairs();
+
+    public abstract ArrayList<UserAnswer> getUserAnswers();
 
     public abstract void changePage();
 

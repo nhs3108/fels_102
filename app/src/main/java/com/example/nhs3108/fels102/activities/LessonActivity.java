@@ -1,11 +1,9 @@
 package com.example.nhs3108.fels102.activities;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -30,19 +28,20 @@ import java.io.IOException;
 /**
  * Created by nhs3108 on 1/11/16.
  */
-public class LessionActivity extends Activity {
+public class LessonActivity extends Activity {
     private SharedPreferences mSharedPreferences;
     private TextView mTextViewLessonName;
     private String mAuthToken;
     private int mCategoryId;
     private int mLessonId;
+    private String mLessonName;
 
     public void onCreate(Bundle savedInstaceState) {
         super.onCreate(savedInstaceState);
         setContentView(R.layout.activity_lesson);
         initialize();
         if (mCategoryId != -1 && !TextUtils.isEmpty(mAuthToken)) {
-            new CreateLessionAsynTask(LessionActivity.this).execute(mAuthToken, String.valueOf(mCategoryId));
+            new CreateLessionAsynTask(LessonActivity.this).execute(mAuthToken, String.valueOf(mCategoryId));
         } else {
             finish();
         }
@@ -51,9 +50,11 @@ public class LessionActivity extends Activity {
         btnStartTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LessionActivity.this, DoingLessonActivity.class);
+                Intent intent = new Intent(LessonActivity.this, DoingLessonActivity.class);
                 intent.putExtra(CommonConsts.KEY_LESSON_ID, mLessonId);
+                intent.putExtra(CommonConsts.KEY_LESSON_NAME, mLessonName);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -102,13 +103,14 @@ public class LessionActivity extends Activity {
                         mTextViewLessonName.setText(lessonName);
                         String wordsData = lessonJson.optString("words");
                         mLessonId = lessonJson.optInt("id");
+                        mLessonName = lessonJson.optString("name");
                         SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_WORDS_DATA, wordsData);
                     } catch (JSONException e) {
                         // Do nothing
                     }
                     break;
                 default:
-                    ResponseHelper.httpStatusNotify(LessionActivity.this, mStatusCode);
+                    ResponseHelper.httpStatusNotify(LessonActivity.this, mStatusCode);
             }
         }
 

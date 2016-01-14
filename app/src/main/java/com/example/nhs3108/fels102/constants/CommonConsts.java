@@ -13,4 +13,7 @@ public class CommonConsts {
     public static final String KEY_LESSON_ID = "lessonId";
     public static final String KEY_WORDS_DATA = "wordsData";
     public static final String KEY_CATEGORY_ID = "categoryId";
+    public static final String KEY_USER_ANSWERS = "userAnwsersData";
+
+    public static final String KEY_LESSON_NAME = "lessonName";
 }
