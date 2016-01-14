@@ -33,4 +33,5 @@
     <string name="num_of_words_learned">Number of words learned</string>
     <string name="label_start_lesson">Start lesson</string>
     <string name="unknow_answer">Unknow answer</string>
+    <string name="bad_request">Bad request</string>
 </resources>

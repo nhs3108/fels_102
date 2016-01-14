@@ -6,12 +6,23 @@ import java.util.ArrayList;
  * Created by nhs3108 on 1/11/16.
  */
 public class Word {
+    private int id;
     private String content;
     private ArrayList<Answer> answers;
 
     public Word(String content, ArrayList<Answer> answers) {
         this.content = content;
         this.answers = answers;
+    }
+
+    public Word(int id, String content, ArrayList<Answer> answers) {
+        this.id = id;
+        this.content = content;
+        this.answers = answers;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getContent() {

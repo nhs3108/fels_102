@@ -7,6 +7,6 @@ import android.content.SharedPreferences;
  */
 public class SharePreferencesUtils {
     public static void putString(SharedPreferences sharedPreferences, String key, String value) {
-        sharedPreferences.edit().putString(key, value);
+        sharedPreferences.edit().putString(key, value).commit();
     }
 }
