@@ -11,7 +11,7 @@ import com.example.nhs3108.fels102.R;
  */
 public abstract class MyAsyncTask<T1, T2, T3> extends AsyncTask<T1, T2, T3> {
     protected Context context;
-    private ProgressDialog mProgressDialog;
+    protected ProgressDialog progressDialog;
 
     public MyAsyncTask(Context context) {
         this.context = context;
@@ -19,14 +19,14 @@ public abstract class MyAsyncTask<T1, T2, T3> extends AsyncTask<T1, T2, T3> {
 
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog = new ProgressDialog(context);
-        mProgressDialog.setMessage(context.getString(R.string.msg_wait));
-        mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.show();
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(context.getString(R.string.msg_wait));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     protected void onPostExecute(T3 result) {
-        mProgressDialog.dismiss();
+        progressDialog.dismiss();
     }
 }

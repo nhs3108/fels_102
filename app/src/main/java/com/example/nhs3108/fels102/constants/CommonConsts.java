@@ -16,4 +16,9 @@ public class CommonConsts {
     public static final String KEY_USER_ANSWERS = "userAnwsersData";
 
     public static final String KEY_LESSON_NAME = "lessonName";
+    public static final String KEY_CATEGORY_LIST = "categoryList";
+
+    public static final String KEY_ALL_WORD = "all_word";
+    public static final String KEY_LEARNED = "learned";
+    public static final String KEY_NOT_LEARNED = "no_learn";
 }

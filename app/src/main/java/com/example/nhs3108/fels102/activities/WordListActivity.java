@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.nhs3108.fels102.R;
@@ -15,7 +18,10 @@ import com.example.nhs3108.fels102.adapters.WordAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.constants.HttpStatusConsts;
 import com.example.nhs3108.fels102.constants.UrlConsts;
+import com.example.nhs3108.fels102.listeners.EndlessRecyclerOnScrollListener;
 import com.example.nhs3108.fels102.utils.Answer;
+import com.example.nhs3108.fels102.utils.Category;
+import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
@@ -34,28 +40,120 @@ import java.util.ArrayList;
  * Created by nhs3108 on 1/10/16.
  */
 public class WordListActivity extends Activity {
+    private String mAuthToken;
     private SharedPreferences mSharedPreferences;
     private ArrayList<Word> mWordsList = new ArrayList<Word>();
+    private ArrayList<Category> mCategoriesList = new ArrayList<Category>();
+    private ArrayList<NameValuePair> mStatusList = new ArrayList<NameValuePair>();
     private WordAdapter mWordAdapter;
+    private ArrayAdapter<Category> mCategoryAdapter;
+    private RecyclerView mRecycleViewWords;
+    private LinearLayoutManager mLayoutManager;
+    private Spinner mSpinnerCategory;
+    private Spinner mSpinnerStatus;
+    private int mCurrentPage = 1;
+    private EndlessRecyclerOnScrollListener mOnScrollListener;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivity_word_list);
-        mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
-        String authToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
-        if (!TextUtils.isEmpty(authToken)) {
-            new ObtainWordList().execute(authToken);
-            ListView listViewWords = (ListView) findViewById(R.id.list_words);
-            mWordAdapter = new WordAdapter(this, R.layout.item_word, mWordsList);
-            listViewWords.setAdapter(mWordAdapter);
-        }
+        initialize();
+        setUpCategorySpinner();
+        setUpStatusSpinner();
+        setupWordRecycleView();
     }
 
-    private class ObtainWordList extends AsyncTask<String, Void, String> {
+    private void initialize() {
+        mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
+        mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
+        mRecycleViewWords = (RecyclerView) findViewById(R.id.list_words);
+
+        mSpinnerCategory = (Spinner) findViewById(R.id.spinner_category);
+        mCategoriesList = (ArrayList<Category>) getIntent().getSerializableExtra(CommonConsts.KEY_CATEGORY_LIST);
+        setUpCategorySpinner();
+
+        mSpinnerStatus = (Spinner) findViewById(R.id.spinner_status);
+        mStatusList.add(new NameValuePair(getString(R.string.key_all_word), CommonConsts.KEY_ALL_WORD));
+        mStatusList.add(new NameValuePair(getString(R.string.key_learned), CommonConsts.KEY_LEARNED));
+        mStatusList.add(new NameValuePair(getString(R.string.key_not_learned), CommonConsts.KEY_NOT_LEARNED));
+        setUpStatusSpinner();
+
+    }
+
+    private void setupWordRecycleView() {
+        mWordAdapter = new WordAdapter(this, mWordsList);
+        mRecycleViewWords.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecycleViewWords.setLayoutManager(mLayoutManager);
+        mRecycleViewWords.setAdapter(mWordAdapter);
+        mOnScrollListener = new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                loadWordList();
+            }
+        };
+        mRecycleViewWords.addOnScrollListener(mOnScrollListener);
+    }
+
+    private void loadWordList() {
+        String categoryIdSelected = String.valueOf(((Category) mSpinnerCategory.getSelectedItem()).getId());
+        String statusSelected = ((NameValuePair) mSpinnerStatus.getSelectedItem()).getValue();
+        new ObtainWordList(WordListActivity.this)
+                .execute(mAuthToken, categoryIdSelected, statusSelected);
+    }
+
+    private void setUpCategorySpinner() {
+        mCategoryAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, mCategoriesList);
+        mSpinnerCategory.setAdapter(mCategoryAdapter);
+        mSpinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                changeFilterHandler();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setUpStatusSpinner() {
+        ArrayAdapter<NameValuePair> statusAdapter = new ArrayAdapter<NameValuePair>(this, android.R.layout.simple_spinner_item, mStatusList);
+        mSpinnerStatus.setAdapter(statusAdapter);
+        mSpinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                changeFilterHandler();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void changeFilterHandler() {
+        mWordsList.clear();
+        mCurrentPage = 1;
+        mOnScrollListener.reset();
+        mWordAdapter.notifyDataSetChanged();
+        loadWordList();
+    }
+
+    private class ObtainWordList extends MyAsyncTask<String, Void, String> {
         String authTokenParamName = "auth_token";
+        String categoryIdParamName = "category_id";
+        String statusParamName = "option";
+        String pageParamName = "page";
         private ProgressDialog mProgressDialog;
         private int mStatusCode;
         private String mResponseBody;
+
+        public ObtainWordList(Context context) {
+            super(context);
+        }
 
         protected void onPreExecute() {
             super.onPreExecute();
@@ -68,10 +166,16 @@ public class WordListActivity extends Activity {
 
         protected String doInBackground(String... args) {
             String authToken = args[0];
-            NameValuePair nvp1 = new NameValuePair(authTokenParamName, authToken);
-            ResponseHelper responseHelper = null;
+            String categoryId = args[1];
+            String status = args[2];
+            ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new NameValuePair(authTokenParamName, authToken));
+            params.add(new NameValuePair(categoryIdParamName, categoryId));
+            params.add(new NameValuePair(statusParamName, status));
+            params.add(new NameValuePair(pageParamName, String.valueOf(mCurrentPage++)));
+            ResponseHelper responseHelper;
             try {
-                responseHelper = RequestHelper.executeRequest(UrlConsts.WORDS_URL, RequestHelper.Method.GET, nvp1);
+                responseHelper = RequestHelper.executeRequest(UrlConsts.WORDS_URL, RequestHelper.Method.GET, params);
                 mStatusCode = responseHelper.getResponseCode();
                 mResponseBody = responseHelper.getResponseBody();
             } catch (MalformedURLException e) {

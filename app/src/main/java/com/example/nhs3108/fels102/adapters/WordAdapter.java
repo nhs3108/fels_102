@@ -2,10 +2,10 @@ package com.example.nhs3108.fels102.adapters;
 
 
 import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.nhs3108.fels102.R;
@@ -17,46 +17,50 @@ import java.util.ArrayList;
 /**
  * Created by nhs3108 on 1/9/16.
  */
-public class WordAdapter extends ArrayAdapter<Word> {
-    private Activity mActivity;
-    private int mIdLayout;
-    private ArrayList<Word> mList;
+public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
+    public static Activity sActivity;
+    public static ArrayList<Word> sList;
     private LayoutInflater mInflater;
 
-    public WordAdapter(Activity activity, int idLayout, ArrayList<Word> list) {
-        super(activity, idLayout, list);
-        this.mActivity = activity;
-        this.mIdLayout = idLayout;
-        this.mList = list;
+    public WordAdapter(Activity activity, ArrayList<Word> list) {
+        this.sActivity = activity;
+        this.sList = list;
         this.mInflater = LayoutInflater.from(activity);
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        Word word = mList.get(position);
-        Answer correctAnswerOfWord = word.getCorrectAnswer();
-        if (convertView == null) {
-            convertView = mInflater.inflate(mIdLayout, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.originWord = (TextView) convertView.findViewById(R.id.text_origin_word);
-            viewHolder.wordMeaning = (TextView) convertView.findViewById(R.id.text_word_meaning);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = mInflater.inflate(R.layout.item_word, parent, false);
+        ViewHolder viewHolder = new ViewHolder(itemView);
+        return viewHolder;
+    }
 
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        Word word = sList.get(position);
+        Answer correctAnswerOfWord = word.getCorrectAnswer();
         viewHolder.originWord.setText(word.getContent());
         if (correctAnswerOfWord != null) {
             viewHolder.wordMeaning.setText(correctAnswerOfWord.getContent());
         } else {
-            viewHolder.wordMeaning.setText(mActivity.getString(R.string.unknow_answer));
-            viewHolder.wordMeaning.setTextColor(mActivity.getResources().getColor(R.color.colorAccent));
+            viewHolder.wordMeaning.setText(sActivity.getString(R.string.unknow_answer));
+            viewHolder.wordMeaning.setTextColor(sActivity.getResources().getColor(R.color.colorAccent));
         }
-        return convertView;
     }
 
-    static class ViewHolder {
+    @Override
+    public int getItemCount() {
+        return sList.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView originWord;
         TextView wordMeaning;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            originWord = (TextView) itemView.findViewById(R.id.text_origin_word);
+            wordMeaning = (TextView) itemView.findViewById(R.id.text_word_meaning);
+        }
     }
 }
