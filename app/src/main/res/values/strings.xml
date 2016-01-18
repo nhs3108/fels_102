@@ -41,4 +41,5 @@
     <string name="key_all_word">All</string>
     <string name="key_learned">Learned</string>
     <string name="key_not_learned">Not learned</string>
+    <string name="format_file_saving_successfully">File was saved successfully in %s</string>
 </resources>

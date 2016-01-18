@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -21,11 +22,13 @@ import com.example.nhs3108.fels102.constants.UrlConsts;
 import com.example.nhs3108.fels102.listeners.EndlessRecyclerOnScrollListener;
 import com.example.nhs3108.fels102.utils.Answer;
 import com.example.nhs3108.fels102.utils.Category;
+import com.example.nhs3108.fels102.utils.PdfUtils;
 import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
 import com.example.nhs3108.fels102.utils.Word;
+import com.itextpdf.text.DocumentException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +38,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by nhs3108 on 1/10/16.
@@ -61,6 +65,13 @@ public class WordListActivity extends Activity {
         setUpCategorySpinner();
         setUpStatusSpinner();
         setupWordRecycleView();
+        ImageButton btnExportPdf = (ImageButton) findViewById(R.id.btn_pdf);
+        btnExportPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SaveWordListPdfFileTask(WordListActivity.this).execute();
+            }
+        });
     }
 
     private void initialize() {
@@ -231,6 +242,45 @@ public class WordListActivity extends Activity {
                 mWordsList.add(new Word(wordContent, answers));
             }
             mWordAdapter.notifyDataSetChanged();
+        }
+    }
+    
+    private class SaveWordListPdfFileTask extends MyAsyncTask<Void, Void, Void > {
+        boolean isCompleted = false;
+        String errorMessage;
+        String filePath;
+        String fileName;
+
+        public SaveWordListPdfFileTask(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            fileName = CommonConsts.DEFAULT_WORDLIST_FILE_NAME + new Date().toString();
+            filePath = CommonConsts.DEFAULT_FILE_SAVED_PATH;
+            PdfUtils fop = new PdfUtils();
+            try {
+                fop.writeWordList(fileName, mWordsList, filePath);
+                isCompleted = true;
+            } catch (IOException e) {
+                errorMessage = e.getMessage();
+            } catch (DocumentException e) {
+                errorMessage = e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if (isCompleted) {
+                Toast.makeText(WordListActivity.this,
+                        String.format(getString(R.string.format_file_saving_successfully), filePath),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(WordListActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
