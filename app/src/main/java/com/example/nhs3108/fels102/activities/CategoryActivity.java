@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.nhs3108.fels102.R;
@@ -19,6 +17,7 @@ import com.example.nhs3108.fels102.adapters.CategoryAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.constants.HttpStatusConsts;
 import com.example.nhs3108.fels102.constants.UrlConsts;
+import com.example.nhs3108.fels102.listeners.EndlessRecyclerOnScrollListener;
 import com.example.nhs3108.fels102.utils.Category;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
@@ -35,39 +34,51 @@ import java.util.ArrayList;
  * Created by nhs3108 on 1/11/16.
  */
 public class CategoryActivity extends Activity {
+    private String mAuthToken;
     private SharedPreferences mSharedPreferences;
     private ArrayList<Category> mCategoriesList = new ArrayList<Category>();
     private CategoryAdapter mCategoryAdapter;
-    private String mAuthToken;
-    private ListView listViewCategories;
+    private RecyclerView mRecycleViewCategories;
+    private LinearLayoutManager mLayoutManager;
+    private int mCurrentPage = 0;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
         initialize();
+        setupCategoryRecycleView();
         if (!TextUtils.isEmpty(mAuthToken)) {
-            mCategoryAdapter = new CategoryAdapter(this, R.layout.item_category, mCategoriesList);
-            listViewCategories.setAdapter(mCategoryAdapter);
             new ObtainCategoriesAsynTask().execute(mAuthToken);
         }
-        listViewCategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(CategoryActivity.this, LessonActivity.class);
-                intent.putExtra(CommonConsts.KEY_CATEGORY_ID, mCategoriesList.get(position).getId());
-                startActivity(intent);
-            }
-        });
+        setUpEventHandlers();
     }
 
     private void initialize() {
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
-        listViewCategories = (ListView) findViewById(R.id.list_categories);
+        mRecycleViewCategories = (RecyclerView) findViewById(R.id.list_categories);
+        mCategoryAdapter = new CategoryAdapter(this, mCategoriesList);
+        mLayoutManager = new LinearLayoutManager(this);
+    }
+
+    private void setupCategoryRecycleView() {
+        mRecycleViewCategories.setHasFixedSize(true);
+        mRecycleViewCategories.setLayoutManager(mLayoutManager);
+        mRecycleViewCategories.setAdapter(mCategoryAdapter);
+    }
+
+    private void setUpEventHandlers() {
+        mRecycleViewCategories.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                new ObtainCategoriesAsynTask().execute(mAuthToken);
+            }
+        });
     }
 
     private class ObtainCategoriesAsynTask extends AsyncTask<String, Void, String> {
         String authTokenParamName = "auth_token";
+        String pageParamName = "page";
         private ProgressDialog mProgressDialog;
         private int mStatusCode;
         private String mResponseBody;
@@ -90,9 +101,10 @@ public class CategoryActivity extends Activity {
         protected String doInBackground(String... args) {
             String authToken = args[0];
             NameValuePair nvp1 = new NameValuePair(authTokenParamName, authToken);
+            NameValuePair nvp2 = new NameValuePair(pageParamName, String.valueOf(++mCurrentPage));
             ResponseHelper responseHelper = null;
             try {
-                responseHelper = RequestHelper.executeRequest(UrlConsts.CATEGORIES_URL, RequestHelper.Method.GET, nvp1);
+                responseHelper = RequestHelper.executeRequest(UrlConsts.CATEGORIES_URL, RequestHelper.Method.GET, nvp1, nvp2);
                 mStatusCode = responseHelper.getResponseCode();
                 mResponseBody = responseHelper.getResponseBody();
             } catch (IOException e) {
