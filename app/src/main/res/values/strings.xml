@@ -38,4 +38,7 @@
     <string name="label_question">Question \#</string>
     <string name="label_lesson">Lesson</string>
     <string name="default_lesson_name">Uknown lesson</string>
+    <string name="key_all_word">All</string>
+    <string name="key_learned">Learned</string>
+    <string name="key_not_learned">Not learned</string>
 </resources>

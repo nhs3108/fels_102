@@ -48,26 +48,28 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:weightSum="100">
 
         <Spinner
             android:id="@+id/spinner_category"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="50"></Spinner>
+            android:layout_height="50dp"
+            android:layout_weight="50">
+        </Spinner>
 
         <Spinner
             android:id="@+id/spinner_status"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
-            android:layout_weight="50"></Spinner>
+            android:layout_weight="50">
+        </Spinner>
     </LinearLayout>
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/list_words"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -75,5 +77,5 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="20dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="10dp"></ListView>
+        android:layout_marginTop="10dp" />
 </LinearLayout>

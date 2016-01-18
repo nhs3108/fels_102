@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.UserActivityAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
+import com.example.nhs3108.fels102.utils.Category;
+import com.example.nhs3108.fels102.utils.ObtainCategoriesAsyncTask;
 import com.example.nhs3108.fels102.utils.UserActivity;
 
 import org.json.JSONArray;
@@ -27,12 +29,15 @@ import java.util.ArrayList;
  * Created by hongson on 30/12/2015.
  */
 public class HomeActivity extends Activity {
+    private String mAuthToken;
     private SharedPreferences mSharedPreferences;
     private TextView mTextViewCurrentUserName;
     private TextView mTextViewCurrentUserEmail;
     private String mUserName;
     private String mUserEmail;
     private ArrayList<UserActivity> mActivitiesList = new ArrayList<UserActivity>();
+    private ArrayList<Category> mCategoriesList = new ArrayList<Category>();
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +54,7 @@ public class HomeActivity extends Activity {
         btnWordList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, WordListActivity.class));
+                new ObtainCategoriesTask(HomeActivity.this, mCategoriesList, mAuthToken, 1).execute();
             }
         });
         btnLessons.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +67,7 @@ public class HomeActivity extends Activity {
 
     private void initialize() {
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, MODE_PRIVATE);
+        mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
         mTextViewCurrentUserName = (TextView) findViewById(R.id.text_current_user_name);
         mTextViewCurrentUserEmail = (TextView) findViewById(R.id.text_current_user_email);
         mUserName = mSharedPreferences.getString(CommonConsts.NAME_FIELD, "");
@@ -106,5 +112,19 @@ public class HomeActivity extends Activity {
                         moveTaskToBack(true);
                     }
                 }).show();
+    }
+
+    private class ObtainCategoriesTask extends ObtainCategoriesAsyncTask {
+        ObtainCategoriesTask(Activity activity, ArrayList<Category> categories, String authToken, int currentPage) {
+            super(activity, categories, authToken, currentPage);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Intent intent = new Intent(HomeActivity.this, WordListActivity.class);
+            intent.putExtra(CommonConsts.KEY_CATEGORY_LIST, mCategoriesList);
+            startActivity(intent);
+        }
     }
 }

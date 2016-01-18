@@ -45,5 +45,13 @@ public abstract class EndlessRecyclerOnScrollListener extends
         }
     }
 
+    public void reset() {
+        mFirstVisibleItem = mVisibleItemCount = mTotalItemCount = 0;
+        mPreviousTotal = 0;
+        mLoading = true;
+        mVisibleThreshold = 5;
+        mCurrentPage = 1;
+    }
+
     public abstract void onLoadMore();
 }
