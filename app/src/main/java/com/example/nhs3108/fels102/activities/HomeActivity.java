@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import com.example.nhs3108.fels102.adapters.UserActivityAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.utils.Category;
 import com.example.nhs3108.fels102.utils.ObtainCategoriesAsyncTask;
+import com.example.nhs3108.fels102.utils.SharePreferencesUtils;
 import com.example.nhs3108.fels102.utils.UserActivity;
 
 import org.json.JSONArray;
@@ -29,15 +31,18 @@ import java.util.ArrayList;
  * Created by hongson on 30/12/2015.
  */
 public class HomeActivity extends Activity {
+    int updateProfileRequestCode = 3;
     private String mAuthToken;
     private SharedPreferences mSharedPreferences;
     private TextView mTextViewCurrentUserName;
     private TextView mTextViewCurrentUserEmail;
+    private ImageButton mBtnUpdateProfile;
+    private Button mBtnWordList;
+    private Button mBtnLessons;
     private String mUserName;
     private String mUserEmail;
     private ArrayList<UserActivity> mActivitiesList = new ArrayList<UserActivity>();
     private ArrayList<Category> mCategoriesList = new ArrayList<Category>();
-
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,20 +54,21 @@ public class HomeActivity extends Activity {
         ListView listViewUActivities = (ListView) findViewById(R.id.list_activities);
         UserActivityAdapter adapter = new UserActivityAdapter(this, R.layout.item_user_activity, mActivitiesList);
         listViewUActivities.setAdapter(adapter);
-        Button btnWordList = (Button) findViewById(R.id.btn_words);
-        Button btnLessons = (Button) findViewById(R.id.btn_lessons);
-        btnWordList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new ObtainCategoriesTask(HomeActivity.this, mCategoriesList, mAuthToken, 1).execute();
+        setUpButtonsEventHanlder();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == updateProfileRequestCode) {
+            if (resultCode == RESULT_OK) {
+                String newName = data.getStringExtra(CommonConsts.NAME_FIELD);
+                String newEmail = data.getStringExtra(CommonConsts.EMAIL_FILED);
+                mTextViewCurrentUserName.setText(newName);
+                mTextViewCurrentUserEmail.setText(newEmail);
+                SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.NAME_FIELD, newName);
+                SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.EMAIL_FILED, newEmail);
             }
-        });
-        btnLessons.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
-            }
-        });
+        }
     }
 
     private void initialize() {
@@ -75,6 +81,31 @@ public class HomeActivity extends Activity {
         Intent data = getIntent();
         String activitiesStr = data.getStringExtra("activities");
         mActivitiesList = convertFromJsonString(activitiesStr);
+        mBtnUpdateProfile = (ImageButton) findViewById(R.id.btn_update_profile);
+        mBtnWordList = (Button) findViewById(R.id.btn_words);
+        mBtnLessons = (Button) findViewById(R.id.btn_lessons);
+    }
+
+
+    private void setUpButtonsEventHanlder() {
+        mBtnWordList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ObtainCategoriesTask(HomeActivity.this, mCategoriesList, mAuthToken, 1).execute();
+            }
+        });
+        mBtnLessons.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
+            }
+        });
+        mBtnUpdateProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(HomeActivity.this, UpdateProfileActivity.class), updateProfileRequestCode);
+            }
+        });
     }
 
     private ArrayList<UserActivity> convertFromJsonString(String jsonStr) {

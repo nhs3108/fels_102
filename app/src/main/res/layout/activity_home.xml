@@ -97,6 +97,16 @@
                     android:gravity="bottom"
                     android:textSize="18sp" />
             </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btn_update_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@color/white"
+                android:src="@mipmap/ic_edit" />
         </LinearLayout>
     </LinearLayout>
 
