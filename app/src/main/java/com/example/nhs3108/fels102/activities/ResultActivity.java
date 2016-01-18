@@ -20,7 +20,8 @@ import java.util.ArrayList;
 public class ResultActivity extends Activity {
     private String mLessonName;
     private ArrayList<UserAnswer> mUserAnswers = new ArrayList<>();
-    private TextView mLessonScore;
+    private TextView mTextViewLessonScore;
+    private TextView mTextViewLessonName;
     private ListView mListViewUserResults;
     private int mTotalCount = 0;
     private int mCorrectCount;
@@ -32,7 +33,8 @@ public class ResultActivity extends Activity {
         calculateResult();
         UserAnwserAdapter userAnwserAdapter = new UserAnwserAdapter(this, R.layout.item_result, mUserAnswers);
         mListViewUserResults.setAdapter(userAnwserAdapter);
-        mLessonScore.setText(String.format("%s/%s", mCorrectCount, mTotalCount));
+        mTextViewLessonScore.setText(String.format("%s/%s", mCorrectCount, mTotalCount));
+        mTextViewLessonName.setText(mLessonName);
     }
 
     private void initialize() {
@@ -42,8 +44,9 @@ public class ResultActivity extends Activity {
         if (TextUtils.isEmpty(mLessonName)) {
             mLessonName = getString(R.string.default_lesson_name);
         }
-        mLessonScore = (TextView) findViewById(R.id.score);
+        mTextViewLessonScore = (TextView) findViewById(R.id.score);
         mListViewUserResults = (ListView) findViewById(R.id.list_user_results);
+        mTextViewLessonName = (TextView) findViewById(R.id.text_lesson_name);
     }
 
     public void calculateResult() {
