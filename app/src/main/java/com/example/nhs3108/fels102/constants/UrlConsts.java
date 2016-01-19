@@ -11,5 +11,6 @@ public class UrlConsts {
     public static final String CATEGORIES_URL = BASE_URL + "/categories.json";
     public static final String LESSON_URl_FORMAT = BASE_URL + "/categories/%s/lessons.json";
     public static final String UPDATE_LESSON_URl_FORMAT = BASE_URL + "/lessons/%s.json";
-    ;
+
+    public static final String UPDATE_PROFILE_URL_FORMAT = BASE_URL + "/users/%s.json";
 }

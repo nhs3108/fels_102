@@ -22,6 +22,7 @@ import com.example.nhs3108.fels102.utils.InternetUtils;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
+import com.example.nhs3108.fels102.utils.SharePreferencesUtils;
 import com.example.nhs3108.fels102.utils.ValidationUtils;
 
 import org.json.JSONException;
@@ -154,11 +155,11 @@ public class LoginActivity extends Activity {
 
         private void storeUserInfo() throws JSONException {
             JSONObject responseJson = new JSONObject(mResponseBody);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putString(CommonConsts.EMAIL_FILED, responseJson.getJSONObject("user").getString("email"));
-            editor.putString(CommonConsts.NAME_FIELD, responseJson.getJSONObject("user").getString("name"));
-            editor.putString(CommonConsts.AUTH_TOKEN_FIELD, responseJson.getJSONObject("user").getString("auth_token"));
-            editor.commit();
+            JSONObject userDataJson = responseJson.optJSONObject("user");
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.EMAIL_FILED, userDataJson.optString("email"));
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.NAME_FIELD, userDataJson.optString("name"));
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.AUTH_TOKEN_FIELD, userDataJson.optString("auth_token"));
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_ID, userDataJson.optString("id"));
         }
 
         private void notifyError(String defaultMessage) {

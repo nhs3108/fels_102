@@ -42,4 +42,7 @@
     <string name="key_learned">Learned</string>
     <string name="key_not_learned">Not learned</string>
     <string name="format_file_saving_successfully">File was saved successfully in %s</string>
+    <string name="title_update_profile">Update profile</string>
+    <string name="label_update_profile">Done</string>
+    <string name="msg_update_successfully">Update successfully!</string>
 </resources>

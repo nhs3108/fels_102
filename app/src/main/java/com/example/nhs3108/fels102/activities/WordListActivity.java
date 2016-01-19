@@ -22,9 +22,9 @@ import com.example.nhs3108.fels102.constants.UrlConsts;
 import com.example.nhs3108.fels102.listeners.EndlessRecyclerOnScrollListener;
 import com.example.nhs3108.fels102.utils.Answer;
 import com.example.nhs3108.fels102.utils.Category;
-import com.example.nhs3108.fels102.utils.PdfUtils;
 import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
+import com.example.nhs3108.fels102.utils.PdfUtils;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
 import com.example.nhs3108.fels102.utils.Word;
@@ -244,8 +244,8 @@ public class WordListActivity extends Activity {
             mWordAdapter.notifyDataSetChanged();
         }
     }
-    
-    private class SaveWordListPdfFileTask extends MyAsyncTask<Void, Void, Void > {
+
+    private class SaveWordListPdfFileTask extends MyAsyncTask<Void, Void, Void> {
         boolean isCompleted = false;
         String errorMessage;
         String filePath;

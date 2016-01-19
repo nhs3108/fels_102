@@ -65,5 +65,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.UpdateProfileActivity" >
+            <intent-filter>
+                <action android:name="com.example.nhs3108.fels102.categories" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
