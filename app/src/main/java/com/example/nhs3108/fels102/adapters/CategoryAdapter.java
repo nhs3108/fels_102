@@ -41,12 +41,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         Category category = sList.get(position);
-        new SetImageViewSrcTask(viewHolder.categoryPhoto).execute(category.getPhotoUrl());
-        viewHolder.categoryName.setText(category.getName());
-        viewHolder.categoryStatus.setText(String.format("%s : %s",
+        new SetImageViewSrcTask(viewHolder.imageCategoryPhoto).execute(category.getPhotoUrl());
+        viewHolder.textCategoryName.setText(category.getName());
+        viewHolder.textCategoryStatus.setText(String.format("%s : %s",
                 sActivity.getString(R.string.num_of_words_learned),
                 category.getSumOfLearnedWords()));
-        viewHolder.categoryId = sList.get(position).getId();
+        viewHolder.categoryId = category.getId();
+        viewHolder.categoryName = category.getName();
     }
 
     @Override
@@ -56,20 +57,22 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         int categoryId;
-        ImageView categoryPhoto;
-        TextView categoryName;
-        TextView categoryStatus;
+        String categoryName;
+        ImageView imageCategoryPhoto;
+        TextView textCategoryName;
+        TextView textCategoryStatus;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            categoryPhoto = (ImageView) itemView.findViewById(R.id.img_category_photo);
-            categoryName = (TextView) itemView.findViewById(R.id.text_category_name);
-            categoryStatus = (TextView) itemView.findViewById(R.id.text_category_status);
+            imageCategoryPhoto = (ImageView) itemView.findViewById(R.id.img_category_photo);
+            textCategoryName = (TextView) itemView.findViewById(R.id.text_category_name);
+            textCategoryStatus = (TextView) itemView.findViewById(R.id.text_category_status);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(sActivity, LessonActivity.class);
                     intent.putExtra(CommonConsts.KEY_CATEGORY_ID, categoryId);
+                    intent.putExtra(CommonConsts.KEY_CATEGORY_NAME, categoryName);
                     sActivity.startActivity(intent);
                 }
             });

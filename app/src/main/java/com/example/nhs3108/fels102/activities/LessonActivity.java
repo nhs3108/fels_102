@@ -34,6 +34,7 @@ public class LessonActivity extends Activity {
     private TextView mTextViewLessonName;
     private String mAuthToken;
     private int mCategoryId;
+    private String mCategoryName;
     private int mLessonId;
     private String mLessonName;
 
@@ -57,6 +58,7 @@ public class LessonActivity extends Activity {
                 Intent intent = new Intent(LessonActivity.this, DoingLessonActivity.class);
                 intent.putExtra(CommonConsts.KEY_LESSON_ID, mLessonId);
                 intent.putExtra(CommonConsts.KEY_LESSON_NAME, mLessonName);
+                intent.putExtra(CommonConsts.KEY_CATEGORY_NAME, mCategoryName);
                 startActivity(intent);
                 finish();
             }
@@ -71,6 +73,10 @@ public class LessonActivity extends Activity {
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
         Intent data = getIntent();
         mCategoryId = data.getIntExtra(CommonConsts.KEY_CATEGORY_ID, -1);
+        mCategoryName = data.getStringExtra(CommonConsts.KEY_CATEGORY_NAME);
+        if (TextUtils.isEmpty(mCategoryName)) {
+            mCategoryName = getString(R.string.default_category_name);
+        }
     }
 
     private class CreateLessionAsynTask extends MyAsyncTask<String, Void, Void> {

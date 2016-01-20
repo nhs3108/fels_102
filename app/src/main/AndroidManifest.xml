@@ -53,21 +53,28 @@
         </activity>
         <activity android:name=".activities.DoingLessonActivity" >
             <intent-filter>
-                <action android:name="com.example.nhs3108.fels102.categories" />
+                <action android:name="com.example.nhs3108.fels102.doingLesson" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".activities.ResultActivity" >
             <intent-filter>
-                <action android:name="com.example.nhs3108.fels102.categories" />
+                <action android:name="com.example.nhs3108.fels102.result" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".activities.UpdateProfileActivity" >
             <intent-filter>
-                <action android:name="com.example.nhs3108.fels102.categories" />
+                <action android:name="com.example.nhs3108.fels102.updateProfile" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.ShowingLessonResultActivity" >
+            <intent-filter>
+                <action android:name="com.example.nhs3108.fels102.showLessonResult" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

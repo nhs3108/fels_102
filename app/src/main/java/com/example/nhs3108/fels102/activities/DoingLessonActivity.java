@@ -46,6 +46,7 @@ public class DoingLessonActivity extends FragmentActivity {
     private String mAuthToken;
     private int mLessonId;
     private String mLessonName;
+    private String mCategoryName;
     private List<Fragment> mQuestionFragmentList = new ArrayList<Fragment>();
 
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,10 @@ public class DoingLessonActivity extends FragmentActivity {
         mLessonName = data.getStringExtra(CommonConsts.KEY_LESSON_NAME);
         if (TextUtils.isEmpty(mLessonName)) {
             mLessonName = getString(R.string.default_lesson_name);
+        }
+        mCategoryName = data.getStringExtra(CommonConsts.KEY_CATEGORY_NAME);
+        if (TextUtils.isEmpty(mCategoryName)) {
+            mCategoryName = getString(R.string.default_category_name);
         }
         initQuestionList();
         mViewPager = (ViewPager) findViewById(R.id.view_pager_question);
@@ -180,6 +185,7 @@ public class DoingLessonActivity extends FragmentActivity {
                     Intent intent = new Intent(DoingLessonActivity.this, ResultActivity.class);
                     intent.putExtra(CommonConsts.KEY_USER_ANSWERS, mUserAnswers);
                     intent.putExtra(CommonConsts.KEY_LESSON_NAME, mLessonName);
+                    intent.putExtra(CommonConsts.KEY_CATEGORY_NAME, mCategoryName);
                     startActivity(intent);
                     finish();
                     break;

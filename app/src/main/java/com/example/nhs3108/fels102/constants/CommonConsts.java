@@ -13,6 +13,7 @@ public class CommonConsts {
     public static final String DEFAULT_LESSON_NAME = "Framgia's Test";
     public static final String KEY_LESSON_ID = "lessonId";
     public static final String KEY_WORDS_DATA = "wordsData";
+    public static final String KEY_CATEGORY_NAME = "categoryName";
     public static final String KEY_CATEGORY_ID = "categoryId";
     public static final String KEY_USER_ANSWERS = "userAnwsersData";
 
@@ -24,4 +25,5 @@ public class CommonConsts {
     public static final String KEY_NOT_LEARNED = "no_learn";
     public static final String DEFAULT_WORDLIST_FILE_NAME = "wordlist";
     public static final String DEFAULT_FILE_SAVED_PATH = "sdcard";
+    public static final String SCORE_FORMAT = "%s/%s";
 }

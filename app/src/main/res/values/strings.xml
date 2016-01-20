@@ -46,4 +46,8 @@
     <string name="label_update_profile">Done</string>
     <string name="msg_update_successfully">Update successfully!</string>
     <string name="no_category_found">No category found</string>
+    <string name="error_cannot_save_result">Cannot save result</string>
+    <string name="default_category_name">Unknow category name</string>
+    <string name="label_lesson_results">Your lessons\' result</string>
+    <string name="label_results">Results</string>
 </resources>
