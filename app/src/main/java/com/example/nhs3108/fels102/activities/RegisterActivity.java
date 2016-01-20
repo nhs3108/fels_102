@@ -69,7 +69,7 @@ public class RegisterActivity extends Activity {
 
     private boolean isValidConditions() {
         ValidationUtils validationUtils = new ValidationUtils(this);
-        if (!InternetUtils.isAvaiable(RegisterActivity.this)) {
+        if (!InternetUtils.checkAvaiable(RegisterActivity.this)) {
             Toast.makeText(RegisterActivity.this, getString(R.string.msg_no_internet), Toast.LENGTH_SHORT).show();
             return false;
         } else {

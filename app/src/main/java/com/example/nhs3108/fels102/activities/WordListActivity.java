@@ -19,6 +19,7 @@ import com.example.nhs3108.fels102.adapters.WordAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.constants.HttpStatusConsts;
 import com.example.nhs3108.fels102.constants.UrlConsts;
+import com.example.nhs3108.fels102.listeners.CommonEventHandlerUtils;
 import com.example.nhs3108.fels102.listeners.EndlessRecyclerOnScrollListener;
 import com.example.nhs3108.fels102.utils.Answer;
 import com.example.nhs3108.fels102.utils.Category;
@@ -55,40 +56,47 @@ public class WordListActivity extends Activity {
     private LinearLayoutManager mLayoutManager;
     private Spinner mSpinnerCategory;
     private Spinner mSpinnerStatus;
+    private ImageButton mBtnBack;
+    private ImageButton mBtnExportPdf;
     private int mCurrentPage = 1;
     private EndlessRecyclerOnScrollListener mOnScrollListener;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivity_word_list);
-        initialize();
-        setUpCategorySpinner();
-        setUpStatusSpinner();
-        setupWordRecycleView();
-        ImageButton btnExportPdf = (ImageButton) findViewById(R.id.btn_pdf);
-        btnExportPdf.setOnClickListener(new View.OnClickListener() {
+        mCategoriesList = (ArrayList<Category>) getIntent().getSerializableExtra(CommonConsts.KEY_CATEGORY_LIST);
+        if (mCategoriesList.size() > 0) {
+            initialize();
+            setUpCategorySpinner();
+            setUpStatusSpinner();
+            setupWordRecycleView();
+            setUpButtonsClickedEventHanlder();
+        } else {
+            Toast.makeText(WordListActivity.this, getString(R.string.no_category_found), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setUpButtonsClickedEventHanlder() {
+        mBtnExportPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new SaveWordListPdfFileTask(WordListActivity.this).execute();
             }
         });
+        CommonEventHandlerUtils.clickBack(WordListActivity.this, mBtnBack);
     }
 
     private void initialize() {
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
         mRecycleViewWords = (RecyclerView) findViewById(R.id.list_words);
-
+        mBtnBack = (ImageButton) findViewById(R.id.btn_back);
+        mBtnExportPdf = (ImageButton) findViewById(R.id.btn_pdf);
         mSpinnerCategory = (Spinner) findViewById(R.id.spinner_category);
-        mCategoriesList = (ArrayList<Category>) getIntent().getSerializableExtra(CommonConsts.KEY_CATEGORY_LIST);
-        setUpCategorySpinner();
-
         mSpinnerStatus = (Spinner) findViewById(R.id.spinner_status);
         mStatusList.add(new NameValuePair(getString(R.string.key_all_word), CommonConsts.KEY_ALL_WORD));
         mStatusList.add(new NameValuePair(getString(R.string.key_learned), CommonConsts.KEY_LEARNED));
         mStatusList.add(new NameValuePair(getString(R.string.key_not_learned), CommonConsts.KEY_NOT_LEARNED));
-        setUpStatusSpinner();
-
     }
 
     private void setupWordRecycleView() {

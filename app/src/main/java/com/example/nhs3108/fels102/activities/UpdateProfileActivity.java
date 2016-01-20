@@ -83,7 +83,7 @@ public class UpdateProfileActivity extends Activity {
 
     private boolean isValidConditions() {
         ValidationUtils validationUtils = new ValidationUtils(this);
-        if (!InternetUtils.isAvaiable(UpdateProfileActivity.this)) {
+        if (!InternetUtils.checkAvaiable(UpdateProfileActivity.this)) {
             Toast.makeText(UpdateProfileActivity.this, getString(R.string.msg_no_internet), Toast.LENGTH_SHORT).show();
             return false;
         } else {
