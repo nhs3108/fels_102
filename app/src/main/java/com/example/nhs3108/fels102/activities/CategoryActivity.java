@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.widget.ImageButton;
 
 import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.CategoryAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
+import com.example.nhs3108.fels102.listeners.CommonEventHandlerUtils;
 import com.example.nhs3108.fels102.listeners.EndlessRecyclerOnScrollListener;
 import com.example.nhs3108.fels102.utils.Category;
 import com.example.nhs3108.fels102.utils.ObtainCategoriesAsyncTask;
@@ -26,6 +28,7 @@ public class CategoryActivity extends Activity {
     private ArrayList<Category> mCategoriesList = new ArrayList<Category>();
     private CategoryAdapter mCategoryAdapter;
     private RecyclerView mRecycleViewCategories;
+    private ImageButton mBtnBack;
     private LinearLayoutManager mLayoutManager;
     private int mCurrentPage = 1;
 
@@ -44,6 +47,7 @@ public class CategoryActivity extends Activity {
     private void initialize() {
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
+        mBtnBack = (ImageButton) findViewById(R.id.btn_back);
         mRecycleViewCategories = (RecyclerView) findViewById(R.id.list_categories);
         mCategoryAdapter = new CategoryAdapter(this, mCategoriesList);
         mLayoutManager = new LinearLayoutManager(this);
@@ -63,6 +67,7 @@ public class CategoryActivity extends Activity {
                         .execute();
             }
         });
+        CommonEventHandlerUtils.clickBack(CategoryActivity.this, mBtnBack);
     }
 
     private class ObtainCategoriesTask extends ObtainCategoriesAsyncTask {

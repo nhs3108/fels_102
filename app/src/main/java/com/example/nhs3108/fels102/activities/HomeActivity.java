@@ -17,6 +17,7 @@ import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.UserActivityAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.utils.Category;
+import com.example.nhs3108.fels102.utils.InternetUtils;
 import com.example.nhs3108.fels102.utils.ObtainCategoriesAsyncTask;
 import com.example.nhs3108.fels102.utils.SharePreferencesUtils;
 import com.example.nhs3108.fels102.utils.UserActivity;
@@ -91,13 +92,17 @@ public class HomeActivity extends Activity {
         mBtnWordList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ObtainCategoriesTask(HomeActivity.this, mCategoriesList, mAuthToken, 1).execute();
+                if (InternetUtils.checkAvaiable(HomeActivity.this)) {
+                    new ObtainCategoriesTask(HomeActivity.this, mCategoriesList, mAuthToken, 1).execute();
+                }
             }
         });
         mBtnLessons.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
+                if (InternetUtils.checkAvaiable(HomeActivity.this)) {
+                    startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
+                }
             }
         });
         mBtnUpdateProfile.setOnClickListener(new View.OnClickListener() {

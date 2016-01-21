@@ -14,6 +14,7 @@ import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.constants.HttpStatusConsts;
 import com.example.nhs3108.fels102.constants.UrlConsts;
+import com.example.nhs3108.fels102.listeners.CommonEventHandlerUtils;
 import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
@@ -40,12 +41,15 @@ public class LessonActivity extends Activity {
         super.onCreate(savedInstaceState);
         setContentView(R.layout.activity_lesson);
         initialize();
+        setUpButtonsClickedEventHandler();
         if (mCategoryId != -1 && !TextUtils.isEmpty(mAuthToken)) {
             new CreateLessionAsynTask(LessonActivity.this).execute(mAuthToken, String.valueOf(mCategoryId));
         } else {
             finish();
         }
+    }
 
+    private void setUpButtonsClickedEventHandler() {
         ImageButton btnStartTest = (ImageButton) findViewById(R.id.btn_start);
         btnStartTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +61,8 @@ public class LessonActivity extends Activity {
                 finish();
             }
         });
+        final ImageButton btnBtnBack = (ImageButton) findViewById(R.id.btn_back);
+        CommonEventHandlerUtils.clickBack(LessonActivity.this, btnBtnBack);
     }
 
     private void initialize() {

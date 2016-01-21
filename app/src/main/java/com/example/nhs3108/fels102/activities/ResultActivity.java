@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.UserAnwserAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
+import com.example.nhs3108.fels102.listeners.CommonEventHandlerUtils;
 import com.example.nhs3108.fels102.utils.UserAnswer;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class ResultActivity extends Activity {
     private ListView mListViewUserResults;
     private int mTotalCount = 0;
     private int mCorrectCount;
+    private ImageButton mBtnBack;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,7 @@ public class ResultActivity extends Activity {
         mListViewUserResults.setAdapter(userAnwserAdapter);
         mTextViewLessonScore.setText(String.format("%s/%s", mCorrectCount, mTotalCount));
         mTextViewLessonName.setText(mLessonName);
+        CommonEventHandlerUtils.clickBack(ResultActivity.this, mBtnBack);
     }
 
     private void initialize() {
@@ -47,6 +51,7 @@ public class ResultActivity extends Activity {
         mTextViewLessonScore = (TextView) findViewById(R.id.score);
         mListViewUserResults = (ListView) findViewById(R.id.list_user_results);
         mTextViewLessonName = (TextView) findViewById(R.id.text_lesson_name);
+        mBtnBack = (ImageButton) findViewById(R.id.btn_back);
     }
 
     public void calculateResult() {
