@@ -40,6 +40,7 @@ public class HomeActivity extends Activity {
     private ImageButton mBtnUpdateProfile;
     private Button mBtnWordList;
     private Button mBtnLessons;
+    private Button mBtnResults;
     private String mUserName;
     private String mUserEmail;
     private ArrayList<UserActivity> mActivitiesList = new ArrayList<UserActivity>();
@@ -85,6 +86,7 @@ public class HomeActivity extends Activity {
         mBtnUpdateProfile = (ImageButton) findViewById(R.id.btn_update_profile);
         mBtnWordList = (Button) findViewById(R.id.btn_words);
         mBtnLessons = (Button) findViewById(R.id.btn_lessons);
+        mBtnResults = (Button) findViewById(R.id.btn_lessons_result);
     }
 
 
@@ -103,6 +105,12 @@ public class HomeActivity extends Activity {
                 if (InternetUtils.checkAvaiable(HomeActivity.this)) {
                     startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
                 }
+            }
+        });
+        mBtnResults.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this, ShowingLessonResultActivity.class));
             }
         });
         mBtnUpdateProfile.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +168,7 @@ public class HomeActivity extends Activity {
             super.onPostExecute(result);
             Intent intent = new Intent(HomeActivity.this, WordListActivity.class);
             intent.putExtra(CommonConsts.KEY_CATEGORY_LIST, mCategoriesList);
+            mCategoriesList.clear();
             startActivity(intent);
         }
     }

@@ -41,6 +41,18 @@ public abstract class QuestionFragment extends Fragment {
     private Activity mActivity;
     private TextToSpeech mTextToSpeech;
 
+    private static void setViewAndChildrenEnabled(View view, boolean enabled) {
+        view.setEnabled(enabled);
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            int childCount = viewGroup.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View child = viewGroup.getChildAt(i);
+                setViewAndChildrenEnabled(child, enabled);
+            }
+        }
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mFragmentView = inflater.inflate(R.layout.fragment_question, container, false);
         initialize();
@@ -68,7 +80,6 @@ public abstract class QuestionFragment extends Fragment {
                 btnAnswerSelected.setBackgroundColor(getResources().getColor(R.color.actionbar));
                 setViewAndChildrenEnabled((View) view.getParent().getParent(), false);
                 Answer answer = mAnswersList.get(position);
-                mUserAnswers.add(new UserAnswer(mWord.getContent(), answer.getContent(), answer.isCorrect()));
                 updateNameValuePairs(mFragmentIndex, mNameValuePairs, mWord, answer);
                 updateUserAnswers(mUserAnswers, mWord, answer);
                 changePage();
@@ -112,18 +123,6 @@ public abstract class QuestionFragment extends Fragment {
 
         nameValuePairs.add(nameValuePair1);
         nameValuePairs.add(nameValuePair2);
-    }
-
-    private static void setViewAndChildrenEnabled(View view, boolean enabled) {
-        view.setEnabled(enabled);
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            int childCount = viewGroup.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                View child = viewGroup.getChildAt(i);
-                setViewAndChildrenEnabled(child, enabled);
-            }
-        }
     }
 
     private void updateUserAnswers(ArrayList<UserAnswer> userAnswers, Word word, Answer answer) {
