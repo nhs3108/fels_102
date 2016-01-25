@@ -64,7 +64,7 @@ public class ObtainCategoriesAsyncTask extends MyAsyncTask<String, Void, String>
             int categoryId = categoriesJson.optJSONObject(i).optInt("id");
             String categoryName = categoriesJson.optJSONObject(i).optString("name");
             String categoryPhotoUrl = categoriesJson.optJSONObject(i).optString("photo");
-            int categoryLearnedWords = categoriesJson.optJSONObject(i).getInt("learned_words");
+            int categoryLearnedWords = categoriesJson.optJSONObject(i).optInt("learned_words");
             categories.add(new Category(categoryId, categoryName, categoryPhotoUrl, categoryLearnedWords));
         }
     }

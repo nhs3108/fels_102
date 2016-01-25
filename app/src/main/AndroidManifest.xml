@@ -10,69 +10,69 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
-        <activity android:name=".activities.LoginActivity" >
+        <activity android:name=".activities.LoginActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.HomeActivity" >
+        <activity android:name=".activities.HomeActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.home" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.RegisterActivity" >
+        <activity android:name=".activities.RegisterActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.register" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.WordListActivity" >
+        <activity android:name=".activities.WordListActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.wordlist" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.LessonActivity" >
+        <activity android:name=".activities.LessonActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.lessons" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.CategoryActivity" >
+        <activity android:name=".activities.CategoryActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.categories" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.DoingLessonActivity" >
+        <activity android:name=".activities.DoingLessonActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.doingLesson" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ResultActivity" >
+        <activity android:name=".activities.ResultActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.result" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.UpdateProfileActivity" >
+        <activity android:name=".activities.UpdateProfileActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.updateProfile" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ShowingLessonResultActivity" >
+        <activity android:name=".activities.ShowingLessonResultActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.nhs3108.fels102.showLessonResult" />
 

@@ -161,6 +161,7 @@ public class HomeActivity extends Activity {
     private class ObtainCategoriesTask extends ObtainCategoriesAsyncTask {
         ObtainCategoriesTask(Activity activity, ArrayList<Category> categories, String authToken, int currentPage) {
             super(activity, categories, authToken, currentPage);
+            categories.clear();
         }
 
         @Override
@@ -168,7 +169,6 @@ public class HomeActivity extends Activity {
             super.onPostExecute(result);
             Intent intent = new Intent(HomeActivity.this, WordListActivity.class);
             intent.putExtra(CommonConsts.KEY_CATEGORY_LIST, mCategoriesList);
-            mCategoriesList.clear();
             startActivity(intent);
         }
     }
