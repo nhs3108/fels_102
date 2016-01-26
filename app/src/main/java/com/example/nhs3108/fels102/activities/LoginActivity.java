@@ -160,6 +160,7 @@ public class LoginActivity extends Activity {
             SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.NAME_FIELD, userDataJson.optString("name"));
             SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.AUTH_TOKEN_FIELD, userDataJson.optString("auth_token"));
             SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_ID, userDataJson.optString("id"));
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_PASSWORD, editTextPassword.getText().toString());
         }
 
         private void notifyError(String defaultMessage) {

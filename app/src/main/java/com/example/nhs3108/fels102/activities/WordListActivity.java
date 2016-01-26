@@ -73,7 +73,12 @@ public class WordListActivity extends Activity {
             setUpButtonsClickedEventHanlder();
         } else {
             Toast.makeText(WordListActivity.this, getString(R.string.no_category_found), Toast.LENGTH_SHORT).show();
+            finish();
         }
+    }
+
+    public void onBackPressed() {
+        finish();
     }
 
     private void setUpButtonsClickedEventHanlder() {

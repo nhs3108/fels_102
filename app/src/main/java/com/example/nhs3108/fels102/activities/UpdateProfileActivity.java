@@ -46,6 +46,9 @@ public class UpdateProfileActivity extends Activity {
     private String mPassword;
     private String mPwdConfirmation;
     private Button mBtnUpdateProfile;
+    private String mOldName;
+    private String mOldPassword;
+    private String mOldEmail;
 
     public void onCreate(Bundle savedInstaceState) {
         super.onCreate(savedInstaceState);
@@ -74,10 +77,17 @@ public class UpdateProfileActivity extends Activity {
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, Context.MODE_PRIVATE);
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
         mUserId = mSharedPreferences.getString(CommonConsts.KEY_USER_ID, null);
+        mOldName = mSharedPreferences.getString(CommonConsts.NAME_FIELD, "");
+        mOldEmail = mSharedPreferences.getString(CommonConsts.EMAIL_FILED, "");
+        mOldPassword = mSharedPreferences.getString(CommonConsts.KEY_USER_PASSWORD, "");
         mEditTextName = (EditText) findViewById(R.id.edit_name);
+        mEditTextName.setText(mOldName);
         mEditTextEmail = (EditText) findViewById(R.id.edit_email);
+        mEditTextEmail.setText(mOldEmail);
         mEditTextPassword = (EditText) findViewById(R.id.edit_password);
         mEditTextRePassword = (EditText) findViewById(R.id.edit_repassword);
+        mEditTextPassword.setText(mOldPassword);
+        mEditTextRePassword.setText(mOldPassword);
         mBtnUpdateProfile = (Button) findViewById(R.id.btn_update_profile);
     }
 
