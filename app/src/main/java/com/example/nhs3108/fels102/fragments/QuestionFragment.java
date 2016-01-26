@@ -16,6 +16,7 @@ import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.AnswerAdapter;
 import com.example.nhs3108.fels102.utils.Answer;
 import com.example.nhs3108.fels102.utils.NameValuePair;
+import com.example.nhs3108.fels102.utils.Question;
 import com.example.nhs3108.fels102.utils.UserAnswer;
 import com.example.nhs3108.fels102.utils.Word;
 
@@ -27,13 +28,13 @@ import java.util.Locale;
  * Created by nhs3108 on 1/13/16.
  */
 public abstract class QuestionFragment extends Fragment {
-    private final String RESULT_WORD_ID_FORMAT = "lesson[results_attributes][%s]['id']";
-    private final String RESULT_ANWSER_ID_FORMAT = "lesson[results_attributes][%s]['answer_id']";
+    private final String RESULT_RESULT_ID_FORMAT = "lesson[results_attributes][%s][id]";
+    private final String RESULT_ANWSER_ID_FORMAT = "lesson[results_attributes][%s][answer_id]";
     private ArrayList<NameValuePair> mNameValuePairs;
     private ArrayList<UserAnswer> mUserAnswers = new ArrayList<UserAnswer>();
     private ArrayList<Answer> mAnswersList;
     private int mFragmentIndex;
-    private Word mWord;
+    private Question mQuestion;
     private TextView mTextViewQuestionName;
     private TextView mTextViewQuestionContent;
     private ListView mlistViewAnswers;
@@ -57,9 +58,8 @@ public abstract class QuestionFragment extends Fragment {
         mFragmentView = inflater.inflate(R.layout.fragment_question, container, false);
         initialize();
         mTextViewQuestionName.setText(mActivity.getString(R.string.label_question) + (mFragmentIndex + 1));
-        mTextViewQuestionContent.setText(mWord.getContent());
+        mTextViewQuestionContent.setText(mQuestion.getWord().getContent());
         final HashMap<String, String> params = new HashMap<String, String>();
-        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, String.valueOf(mWord.getId()));
         mTextViewQuestionContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,8 +80,8 @@ public abstract class QuestionFragment extends Fragment {
                 btnAnswerSelected.setBackgroundColor(getResources().getColor(R.color.actionbar));
                 setViewAndChildrenEnabled((View) view.getParent().getParent(), false);
                 Answer answer = mAnswersList.get(position);
-                updateNameValuePairs(mFragmentIndex, mNameValuePairs, mWord, answer);
-                updateUserAnswers(mUserAnswers, mWord, answer);
+                updateNameValuePairs(mFragmentIndex, mNameValuePairs, mQuestion, answer);
+                updateUserAnswers(mUserAnswers, mQuestion.getWord(), answer);
                 changePage();
             }
         });
@@ -89,8 +89,8 @@ public abstract class QuestionFragment extends Fragment {
 
     private void initialize() {
         mActivity = getActivity();
-        mWord = getWord();
-        mAnswersList = mWord.getAnswers();
+        mQuestion = getQuestion();
+        mAnswersList = mQuestion.getWord().getAnswers();
         mFragmentIndex = getFragmentIndex();
         mNameValuePairs = getRequestParamsPairs();
         mUserAnswers = getUserAnswers();
@@ -111,10 +111,10 @@ public abstract class QuestionFragment extends Fragment {
         mlistViewAnswers = (ListView) mFragmentView.findViewById(R.id.list_answers);
     }
 
-    private void updateNameValuePairs(int index, ArrayList<NameValuePair> nameValuePairs, Word word, Answer answer) {
+    private void updateNameValuePairs(int index, ArrayList<NameValuePair> nameValuePairs, Question question, Answer answer) {
         NameValuePair nameValuePair1 = new NameValuePair(
-                String.format(RESULT_WORD_ID_FORMAT, String.valueOf(index)),
-                String.valueOf(word.getId())
+                String.format(RESULT_RESULT_ID_FORMAT, String.valueOf(index)),
+                String.valueOf(question.getResultId())
         );
         NameValuePair nameValuePair2 = new NameValuePair(
                 String.format(RESULT_ANWSER_ID_FORMAT, String.valueOf(index)),
@@ -126,10 +126,10 @@ public abstract class QuestionFragment extends Fragment {
     }
 
     private void updateUserAnswers(ArrayList<UserAnswer> userAnswers, Word word, Answer answer) {
-        userAnswers.add(new UserAnswer(word.getContent(), answer.getContent(), answer.isCorrect()));
+        userAnswers.set(mFragmentIndex, new UserAnswer(word.getContent(), answer.getContent(), answer.isCorrect()));
     }
 
-    public abstract Word getWord();
+    public abstract Question getQuestion();
 
     public abstract ArrayList<NameValuePair> getRequestParamsPairs();
 

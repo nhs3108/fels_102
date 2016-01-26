@@ -20,14 +20,15 @@
         <TextView
             android:id="@+id/text_category_name"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="60dp"
+            android:gravity="bottom"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_category_status"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:textStyle="italic" />
     </LinearLayout>
 </LinearLayout>

@@ -33,6 +33,7 @@ public class ShowingLessonResultActivity extends Activity {
         CommonEventHandlerUtils.clickBack(this, mBtnBack);
     }
 
+
     public void initialize() {
         mResultHelper = new ResultHelper(this);
         try {

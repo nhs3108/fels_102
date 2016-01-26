@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,6 +49,14 @@ public class ResultActivity extends Activity {
 
         storeResult(mLessonName, mCategoryName, score);
         CommonEventHandlerUtils.clickBack(ResultActivity.this, mBtnBack);
+        ImageButton btnOk = (ImageButton) findViewById(R.id.btn_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ResultActivity.this, ShowingLessonResultActivity.class));
+                finish();
+            }
+        });
     }
 
     private void initialize() {

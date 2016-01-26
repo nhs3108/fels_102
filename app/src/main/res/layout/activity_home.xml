@@ -28,7 +28,6 @@
             android:layout_width="0dp"
             android:layout_height="120dp"
             android:layout_weight="35"
-            android:src="@mipmap/image_default_avatar"
             app:civ_border_color="@color/bg_blue"
             app:civ_border_width="2dp" />
 

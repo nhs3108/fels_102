@@ -1,11 +1,9 @@
 package com.example.nhs3108.fels102.activities;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,21 +14,9 @@ import android.widget.Toast;
 
 import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.constants.CommonConsts;
-import com.example.nhs3108.fels102.constants.HttpStatusConsts;
-import com.example.nhs3108.fels102.constants.UrlConsts;
 import com.example.nhs3108.fels102.utils.InternetUtils;
-import com.example.nhs3108.fels102.utils.NameValuePair;
-import com.example.nhs3108.fels102.utils.RequestHelper;
-import com.example.nhs3108.fels102.utils.ResponseHelper;
-import com.example.nhs3108.fels102.utils.SharePreferencesUtils;
+import com.example.nhs3108.fels102.utils.LoginAsyncTask;
 import com.example.nhs3108.fels102.utils.ValidationUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 
 public class LoginActivity extends Activity {
     EditText editTextEmail;
@@ -55,7 +41,7 @@ public class LoginActivity extends Activity {
                     if (isValidConditions()) {
                         editTextEmail.setError(null);
                         editTextPassword.setError(null);
-                        new LoginAsyncTask().execute(email, password);
+                        new LoginAsyncTask(LoginActivity.this, mSharedPreferences).execute(email, password);
                     }
                 }
             });
@@ -82,95 +68,6 @@ public class LoginActivity extends Activity {
             boolean isValidEmail = validationUtils.validateEmail(editTextEmail);
             boolean isValidPassword = validationUtils.validatePassword(editTextPassword);
             return isValidEmail && isValidPassword;
-        }
-    }
-
-    private class LoginAsyncTask extends AsyncTask<String, Void, String> {
-        String emailParamName = "session[email]";
-        String passwordParamName = "session[password]";
-        private ProgressDialog mProgressDialog;
-        private int mStatusCode;
-        private String mResponseBody;
-
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = new ProgressDialog(LoginActivity.this);
-            mProgressDialog.setMessage(getString(R.string.msg_wait));
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
-        }
-
-        protected String doInBackground(String... args) {
-            String email = args[0];
-            String password = args[1];
-            NameValuePair nvp1 = new NameValuePair(emailParamName, email);
-            NameValuePair nvp2 = new NameValuePair(passwordParamName, password);
-            ResponseHelper responseHelper = null;
-            try {
-                responseHelper = RequestHelper.executeRequest(UrlConsts.LOGIN, RequestHelper.Method.POST, nvp1, nvp2);
-                mStatusCode = responseHelper.getResponseCode();
-                mResponseBody = responseHelper.getResponseBody();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            mProgressDialog.dismiss();
-            switch (mStatusCode) {
-                case HttpStatusConsts.OK:
-                    try {
-                        storeUserInfo();
-                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        String activitiesStr = new JSONObject(mResponseBody).optJSONObject("user").optString("activities");
-                        intent.putExtra("activities", activitiesStr);
-                        startActivity(intent);
-                        finish();
-                    } catch (JSONException e) {
-                        Toast.makeText(LoginActivity.this, getString(R.string.error_response_data), Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case HttpStatusConsts.UNAUTHORIZED:
-                    String errorMessage = getString(R.string.error_unauthorized);
-                    notifyError(errorMessage);
-                    break;
-                case HttpStatusConsts.NOT_FOUND:
-                    Toast.makeText(LoginActivity.this, getString(R.string.error_server_not_found), Toast.LENGTH_SHORT).show();
-                    break;
-                case HttpStatusConsts.INTERNAL_SERVER_ERROR:
-                    Toast.makeText(LoginActivity.this, getString(R.string.error_internal_server_error), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    Toast.makeText(LoginActivity.this, getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        private void storeUserInfo() throws JSONException {
-            JSONObject responseJson = new JSONObject(mResponseBody);
-            JSONObject userDataJson = responseJson.optJSONObject("user");
-            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.EMAIL_FILED, userDataJson.optString("email"));
-            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.NAME_FIELD, userDataJson.optString("name"));
-            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.AUTH_TOKEN_FIELD, userDataJson.optString("auth_token"));
-            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_ID, userDataJson.optString("id"));
-            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_PASSWORD, editTextPassword.getText().toString());
-        }
-
-        private void notifyError(String defaultMessage) {
-            try {
-                JSONObject responseJson = new JSONObject(mResponseBody);
-                Toast.makeText(LoginActivity.this, responseJson.getString("message"), Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Toast.makeText(LoginActivity.this, defaultMessage, Toast.LENGTH_SHORT).show();
-            }
         }
     }
 }

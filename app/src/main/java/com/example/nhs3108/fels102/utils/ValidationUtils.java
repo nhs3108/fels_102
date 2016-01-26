@@ -1,6 +1,7 @@
 package com.example.nhs3108.fels102.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.EditText;
 
 import com.example.nhs3108.fels102.R;
@@ -29,7 +30,9 @@ public class ValidationUtils {
     public boolean validateName(EditText editTextName) {
         boolean isValid = false;
         String name = editTextName.getText().toString();
-        if (name.length() < NAME_MIN_LENGTH) {
+        if (TextUtils.isEmpty(name)) {
+            editTextName.setError(mContext.getString(R.string.error_name_blank));
+        } else if (name.length() < NAME_MIN_LENGTH) {
             editTextName.setError(mContext.getString(R.string.error_name_short));
         } else {
             isValid = true;
@@ -40,8 +43,8 @@ public class ValidationUtils {
     public boolean validateEmail(EditText editTextEmail) {
         boolean isValid = false;
         String email = editTextEmail.getText().toString();
-        if (email.length() < EMAIL_MIN_LENGTH) {
-            editTextEmail.setError(mContext.getString(R.string.error_email_short));
+        if (TextUtils.isEmpty(email)) {
+            editTextEmail.setError(mContext.getString(R.string.error_email_blank));
         } else if (!EmailUtils.isValidPatternEmail(email, EMAIL_PATTERN)) {
             editTextEmail.setError(mContext.getString(R.string.error_email_invalid));
         } else {
@@ -53,7 +56,9 @@ public class ValidationUtils {
     public boolean validatePassword(EditText editTextPasssword) {
         boolean isValid = false;
         String password = editTextPasssword.getText().toString();
-        if (password.length() < PASSWORD_MIN_LENGTH) {
+        if (TextUtils.isEmpty(password)) {
+            editTextPasssword.setError(mContext.getString(R.string.error_password_blank));
+        } else if (password.length() < PASSWORD_MIN_LENGTH) {
             editTextPasssword.setError(mContext.getString(R.string.error_password_short));
         } else {
             isValid = true;
@@ -65,10 +70,10 @@ public class ValidationUtils {
         boolean isValid = false;
         String password = editTextPasssword.getText().toString();
         String passwordConfirmation = editTextRePasssword.getText().toString();
-        if (password.length() < PASSWORD_MIN_LENGTH) {
-            editTextPasssword.setError(mContext.getString(R.string.error_password_short));
-        } else if (!password.equals(passwordConfirmation)) {
+        if (!password.equals(passwordConfirmation)) {
             editTextPasssword.setError(mContext.getString(R.string.error_repassword_not_match));
+        } else if (password.length() < PASSWORD_MIN_LENGTH) {
+            editTextPasssword.setError(mContext.getString(R.string.error_password_short));
         } else {
             isValid = true;
         }

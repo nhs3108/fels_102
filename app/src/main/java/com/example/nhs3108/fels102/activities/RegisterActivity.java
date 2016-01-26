@@ -1,10 +1,9 @@
 package com.example.nhs3108.fels102.activities;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,9 +15,11 @@ import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.constants.HttpStatusConsts;
 import com.example.nhs3108.fels102.constants.UrlConsts;
 import com.example.nhs3108.fels102.utils.InternetUtils;
+import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
+import com.example.nhs3108.fels102.utils.SharePreferencesUtils;
 import com.example.nhs3108.fels102.utils.ValidationUtils;
 
 import org.json.JSONException;
@@ -61,7 +62,7 @@ public class RegisterActivity extends Activity {
                     editTextEmail.setError(null);
                     editTextPassword.setError(null);
                     editTextRePassword.setError(null);
-                    new RegisterAsyncTask().execute(name, email, password, passwordConfirmation);
+                    new RegisterAsyncTask(RegisterActivity.this).execute(name, email, password, passwordConfirmation);
                 }
             }
         });
@@ -81,32 +82,29 @@ public class RegisterActivity extends Activity {
         }
     }
 
-    private class RegisterAsyncTask extends AsyncTask<String, Void, String> {
+    private class RegisterAsyncTask extends MyAsyncTask<String, Void, String> {
+        String userName;
+        String userEmail;
+        String userPassword;
         private String mNameParamName = "user[name]";
         private String mEmailParamName = "user[email]";
         private String mPasswordParamName = "user[password]";
         private String mPwdConfirmationParamName = "user[password_confirmation]";
-        private ProgressDialog mProgressDialog;
         private int mStatusCode;
         private String mResponseBody;
 
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = new ProgressDialog(RegisterActivity.this);
-            mProgressDialog.setMessage(getString(R.string.msg_wait));
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
+        public RegisterAsyncTask(Context context) {
+            super(context);
         }
 
         protected String doInBackground(String... args) {
-            String name = args[0];
-            String email = args[1];
-            String password = args[2];
+            userName = args[0];
+            userEmail = args[1];
+            userPassword = args[2];
             String passwordConfirmation = args[3];
-            NameValuePair nvp1 = new NameValuePair(mNameParamName, name);
-            NameValuePair nvp2 = new NameValuePair(mEmailParamName, email);
-            NameValuePair nvp3 = new NameValuePair(mPasswordParamName, password);
+            NameValuePair nvp1 = new NameValuePair(mNameParamName, userName);
+            NameValuePair nvp2 = new NameValuePair(mEmailParamName, userEmail);
+            NameValuePair nvp3 = new NameValuePair(mPasswordParamName, userPassword);
             NameValuePair nvp4 = new NameValuePair(mPwdConfirmationParamName, passwordConfirmation);
             try {
                 ResponseHelper responseHelper = RequestHelper.executeRequest(UrlConsts.REGISTER_URL, RequestHelper.Method.POST, nvp1, nvp2, nvp3, nvp4);
@@ -124,23 +122,26 @@ public class RegisterActivity extends Activity {
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            mProgressDialog.dismiss();
             switch (mStatusCode) {
                 case HttpStatusConsts.OK:
-                    Toast.makeText(RegisterActivity.this, getString(R.string.msg_signup_successfully), Toast.LENGTH_SHORT).show();
+                    try {
+                        storeUserInfo();
+                        Intent intent = new Intent(context, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        String activitiesStr = new JSONObject(mResponseBody).optJSONObject("user").optString("activities");
+                        SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_ACTIVITIES, activitiesStr);
+                        context.startActivity(intent);
+                        ((Activity) context).finish();
+                    } catch (JSONException e) {
+                        Toast.makeText(context, context.getString(R.string.error_response_data), Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case HttpStatusConsts.UNAUTHORIZED:
                     String errorMessage = getString(R.string.error_unauthorized);
                     notifyErrors(errorMessage);
                     break;
-                case HttpStatusConsts.NOT_FOUND:
-                    Toast.makeText(RegisterActivity.this, getString(R.string.error_server_not_found), Toast.LENGTH_SHORT).show();
-                    break;
-                case HttpStatusConsts.INTERNAL_SERVER_ERROR:
-                    Toast.makeText(RegisterActivity.this, getString(R.string.error_internal_server_error), Toast.LENGTH_SHORT).show();
-                    break;
                 default:
-                    Toast.makeText(RegisterActivity.this, getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
+                    ResponseHelper.httpStatusNotify(RegisterActivity.this, mStatusCode);
             }
         }
 
@@ -157,6 +158,17 @@ public class RegisterActivity extends Activity {
             } catch (JSONException e) {
                 Toast.makeText(RegisterActivity.this, defaultMessage, Toast.LENGTH_SHORT).show();
             }
+        }
+
+        private void storeUserInfo() throws JSONException {
+            JSONObject responseJson = new JSONObject(mResponseBody);
+            JSONObject userDataJson = responseJson.optJSONObject("user");
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.EMAIL_FILED, userEmail);
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.NAME_FIELD, userName);
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.AUTH_TOKEN_FIELD, userDataJson.optString("auth_token"));
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_ID, userDataJson.optString("id"));
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_PASSWORD, userPassword);
+            SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_AVATAR_URL, userDataJson.optString("avatar"));
         }
     }
 }

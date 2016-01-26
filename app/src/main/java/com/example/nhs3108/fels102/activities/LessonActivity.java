@@ -14,7 +14,6 @@ import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.constants.HttpStatusConsts;
 import com.example.nhs3108.fels102.constants.UrlConsts;
-import com.example.nhs3108.fels102.listeners.CommonEventHandlerUtils;
 import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
 import com.example.nhs3108.fels102.utils.RequestHelper;
@@ -50,6 +49,9 @@ public class LessonActivity extends Activity {
         }
     }
 
+    public void onBackPressed() {
+    }
+
     private void setUpButtonsClickedEventHandler() {
         ImageButton btnStartTest = (ImageButton) findViewById(R.id.btn_start);
         btnStartTest.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +65,7 @@ public class LessonActivity extends Activity {
                 finish();
             }
         });
-        final ImageButton btnBtnBack = (ImageButton) findViewById(R.id.btn_back);
-        CommonEventHandlerUtils.clickBack(LessonActivity.this, btnBtnBack);
+        ImageButton btnBtnBack = (ImageButton) findViewById(R.id.btn_back);
     }
 
     private void initialize() {

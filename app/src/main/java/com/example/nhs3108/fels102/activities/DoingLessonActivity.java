@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.LessonFragmentPagerAdapter;
@@ -21,6 +22,7 @@ import com.example.nhs3108.fels102.fragments.QuestionFragment;
 import com.example.nhs3108.fels102.utils.Answer;
 import com.example.nhs3108.fels102.utils.MyAsyncTask;
 import com.example.nhs3108.fels102.utils.NameValuePair;
+import com.example.nhs3108.fels102.utils.Question;
 import com.example.nhs3108.fels102.utils.RequestHelper;
 import com.example.nhs3108.fels102.utils.ResponseHelper;
 import com.example.nhs3108.fels102.utils.UserAnswer;
@@ -28,6 +30,7 @@ import com.example.nhs3108.fels102.utils.Word;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +43,7 @@ public class DoingLessonActivity extends FragmentActivity {
     private ArrayList<NameValuePair> mRequestParamsPair = new ArrayList<NameValuePair>();
     private ArrayList<UserAnswer> mUserAnswers = new ArrayList<UserAnswer>();
     private SharedPreferences mSharedPreferences;
-    private ArrayList<Word> mQuestionList = new ArrayList<Word>();
+    private ArrayList<Question> mQuestionList = new ArrayList<Question>();
     private ViewPager mViewPager;
     private TextView mTextViewLessonName;
     private String mAuthToken;
@@ -58,6 +61,9 @@ public class DoingLessonActivity extends FragmentActivity {
                 new LessonFragmentPagerAdapter(getSupportFragmentManager(), mQuestionFragmentList);
         mViewPager.setAdapter(lessonFragmentPagerAdapter);
         setupEventHanlders();
+    }
+
+    public void onBackPressed() {
     }
 
     private void initialize() {
@@ -86,16 +92,22 @@ public class DoingLessonActivity extends FragmentActivity {
             JSONArray wordsJson = new JSONArray(wordsData);
             int numOfWords = wordsJson.length();
             for (int i = 0; i < numOfWords; i++) {
-                String wordContent = wordsJson.optJSONObject(i).optString("content");
-                JSONArray answersJson = wordsJson.optJSONObject(i).optJSONArray("answers");
+                JSONObject wordData = wordsJson.optJSONObject(i);
+                int wordId = wordData.optInt("id");
+                String wordContent = wordData.optString("content");
+                int resultId = wordData.optInt("result_id");
+                JSONArray answersJson = wordData.optJSONArray("answers");
                 ArrayList<Answer> answers = new ArrayList<Answer>();
                 int numOfAnswers = answersJson.length();
                 for (int j = 0; j < numOfAnswers; j++) {
-                    String answerContent = answersJson.optJSONObject(j).optString("content");
-                    Boolean isCorrect = answersJson.optJSONObject(j).optBoolean("is_correct");
-                    answers.add(new Answer(answerContent, isCorrect));
+                    JSONObject answerData = answersJson.optJSONObject(j);
+                    int answerId = answerData.optInt("id");
+                    String answerContent = answerData.optString("content");
+                    Boolean isCorrect = answerData.optBoolean("is_correct");
+                    answers.add(new Answer(answerId, answerContent, isCorrect));
                 }
-                mQuestionList.add(new Word(wordContent, answers));
+                mQuestionList.add(new Question(new Word(wordId, wordContent, answers), resultId));
+                mUserAnswers.add(i, new UserAnswer(wordContent, getString(R.string.not_answered), false));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -110,7 +122,7 @@ public class DoingLessonActivity extends FragmentActivity {
 
             mQuestionFragmentList.add(new QuestionFragment() {
                 @Override
-                public Word getWord() {
+                public Question getQuestion() {
                     return mQuestionList.get(index);
                 }
 
@@ -190,7 +202,8 @@ public class DoingLessonActivity extends FragmentActivity {
                     finish();
                     break;
                 default:
-                    ResponseHelper.httpStatusNotify(DoingLessonActivity.this, mStatusCode);
+                    Toast.makeText(DoingLessonActivity.this, getString(R.string.error_cannot_save_result), Toast.LENGTH_SHORT).show();
+                    finish();
             }
         }
     }

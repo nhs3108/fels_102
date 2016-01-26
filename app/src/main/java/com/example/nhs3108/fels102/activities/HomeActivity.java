@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import com.example.nhs3108.fels102.R;
 import com.example.nhs3108.fels102.adapters.UserActivityAdapter;
 import com.example.nhs3108.fels102.constants.CommonConsts;
 import com.example.nhs3108.fels102.utils.Category;
+import com.example.nhs3108.fels102.utils.DrawImageViewSrcTask;
 import com.example.nhs3108.fels102.utils.InternetUtils;
 import com.example.nhs3108.fels102.utils.ObtainCategoriesAsyncTask;
 import com.example.nhs3108.fels102.utils.SharePreferencesUtils;
@@ -35,12 +37,14 @@ public class HomeActivity extends Activity {
     int updateProfileRequestCode = 3;
     private String mAuthToken;
     private SharedPreferences mSharedPreferences;
+    private ImageView mImageAvatar;
     private TextView mTextViewCurrentUserName;
     private TextView mTextViewCurrentUserEmail;
     private ImageButton mBtnUpdateProfile;
     private Button mBtnWordList;
     private Button mBtnLessons;
     private Button mBtnResults;
+    private String mUserAvatarUrl;
     private String mUserName;
     private String mUserEmail;
     private ArrayList<UserActivity> mActivitiesList = new ArrayList<UserActivity>();
@@ -52,7 +56,7 @@ public class HomeActivity extends Activity {
         initialize();
         mTextViewCurrentUserName.setText(mUserName);
         mTextViewCurrentUserEmail.setText(mUserEmail);
-
+        new DrawImageViewSrcTask(mImageAvatar).execute(mUserAvatarUrl);
         ListView listViewUActivities = (ListView) findViewById(R.id.list_activities);
         UserActivityAdapter adapter = new UserActivityAdapter(this, R.layout.item_user_activity, mActivitiesList);
         listViewUActivities.setAdapter(adapter);
@@ -65,10 +69,14 @@ public class HomeActivity extends Activity {
             if (resultCode == RESULT_OK) {
                 String newName = data.getStringExtra(CommonConsts.NAME_FIELD);
                 String newEmail = data.getStringExtra(CommonConsts.EMAIL_FILED);
+                String newAvatarUrl = data.getStringExtra(CommonConsts.KEY_USER_AVATAR_URL);
+                mUserAvatarUrl = newAvatarUrl;
                 mTextViewCurrentUserName.setText(newName);
                 mTextViewCurrentUserEmail.setText(newEmail);
                 SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.NAME_FIELD, newName);
                 SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.EMAIL_FILED, newEmail);
+                SharePreferencesUtils.putString(mSharedPreferences, CommonConsts.KEY_USER_AVATAR_URL, newAvatarUrl);
+                new DrawImageViewSrcTask(mImageAvatar).execute(mUserAvatarUrl);
             }
         }
     }
@@ -76,12 +84,14 @@ public class HomeActivity extends Activity {
     private void initialize() {
         mSharedPreferences = getSharedPreferences(CommonConsts.USER_SHARED_PREF, MODE_PRIVATE);
         mAuthToken = mSharedPreferences.getString(CommonConsts.AUTH_TOKEN_FIELD, null);
+        mImageAvatar = (ImageView) findViewById(R.id.image_avatar);
         mTextViewCurrentUserName = (TextView) findViewById(R.id.text_current_user_name);
         mTextViewCurrentUserEmail = (TextView) findViewById(R.id.text_current_user_email);
         mUserName = mSharedPreferences.getString(CommonConsts.NAME_FIELD, "");
         mUserEmail = mSharedPreferences.getString(CommonConsts.EMAIL_FILED, "");
+        mUserAvatarUrl = mSharedPreferences.getString(CommonConsts.KEY_USER_AVATAR_URL, "");
         Intent data = getIntent();
-        String activitiesStr = data.getStringExtra("activities");
+        String activitiesStr = mSharedPreferences.getString(CommonConsts.KEY_ACTIVITIES, "");
         mActivitiesList = convertFromJsonString(activitiesStr);
         mBtnUpdateProfile = (ImageButton) findViewById(R.id.btn_update_profile);
         mBtnWordList = (Button) findViewById(R.id.btn_words);
@@ -147,6 +157,7 @@ public class HomeActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mSharedPreferences.edit().clear().commit();
+                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
                         finish();
                     }
                 })
